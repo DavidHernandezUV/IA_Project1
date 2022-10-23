@@ -60,11 +60,12 @@ class Viewer:
     def figures(self, screen, matriz):
 
         aux = np.nditer(matriz,flags=['multi_index'])
-        print(aux)
         for element in aux:
-                        
+            #print(aux.multi_index)
+            #print("%d %s" % (element, aux.multi_index), end=' ')
             if element!=0:
-                print("%d %s" % (element, aux.multi_index), end=' ')
+                
+                
                 fig = pygame.image.load("img/%d.jpg" % int(element)).convert()
                 # Using blit to copy content from one surface to other
                 screen.blit(fig, (aux.multi_index[1]*self.blockSize+5, aux.multi_index[0]*self.blockSize+5))
