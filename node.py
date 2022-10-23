@@ -16,7 +16,19 @@ class Node:
         col = 0
         son = np.array(self.puzzle, copy=True)
 
+    def showDepth(self):
+        print("La profundidad del nodo es:", self.depth)
+
+    def showOperator(self):
+        print("El operador usado fue:", self.operator)
+
+    def showPuzzle(self):
+        print(self.puzzle)
+
 
 puzzle = [[1, 2], [3, 4]]
-node = Node(puzzle, 0, 0, 0)
-node.move()
+node = Node(puzzle, 0, 'izquierda', 2)
+node.move(2)
+node.showDepth()
+node.showOperator()
+node.showPuzzle()
