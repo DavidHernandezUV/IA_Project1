@@ -15,7 +15,7 @@ class Node:
     KOOPA = 5
     YOSHI = 6
 
-    def __init__(self, gameBoard, father, operator, depth, marioPos):
+    def __init__(self, gameBoard, father, operator, depth, cost, marioPos):
         self.gameBoard = gameBoard
         self.father = father
         self.operator = operator
@@ -23,6 +23,16 @@ class Node:
         self.ROWS = len(gameBoard)
         self.COLS = len(gameBoard[0])
         self.marioPos = marioPos
+        self.cost = cost
+
+    def getGameBoard(self):
+        return self.gameBoard
+
+    def getCost(self):
+        return self.cost
+
+    def getDepth(self):
+        return self.depth
 
     def move(self, direction):
 
@@ -53,7 +63,8 @@ class Node:
             # New Mario position
             sonMarioPosition = (self.marioPos[0]-1, self.marioPos[1])
 
-        print(sonGameBoard, sonMarioPosition)
+        #print(sonGameBoard, sonMarioPosition)
+
         return sonGameBoard, sonMarioPosition
 
     def showDepth(self):
@@ -65,19 +76,6 @@ class Node:
     def showgameBoard(self):
         print(self.gameBoard)
 
-
-gameBoard = np.loadtxt("Prueba1.txt", dtype='i', delimiter=' ')
-
-# Where is Mario
-aux = np.nditer(gameBoard, flags=['multi_index'])
-mariecito = [0, 0]
-for element in aux:
-    if element == 2:
-        mariecito = aux.multi_index
-print("MARIO ESTÁ EN: ", mariecito)
-
-node = Node(gameBoard, 0, 'izquierda', 2, mariecito)
-node.move(2)
-# node.showDepth()
-# node.showOperator()
-# node.showgameBoard()
+    def goalReached(self, yoshiPos):
+        print(self.marioPos, yoshiPos)
+        return self.marioPos == yoshiPos
