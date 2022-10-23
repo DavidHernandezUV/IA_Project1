@@ -2,63 +2,71 @@ import pygame, sys, math
 import numpy as np
 
 
+class Viewer:
 
-#Window dimensions
-w_height = 600
-w_width = 600
+    #Constructor
+    def __init__(self, initial_state):
 
-size = (w_height,w_width )
-test = np.loadtxt("Prueba1.txt", dtype='i',delimiter=' ')
-
-#Colors
-WHITE = (255,255,255)
-BLACK = (0,0,0)
-
-def main():
-    pygame.init()
-
-    #Create window
-    screen = pygame.display.set_mode(size)
-    screen.fill(WHITE)
-    figures(screen,test)
-
-
-
-    while True:
+        self.initial_state = initial_state;
         
-        drawGrid(screen)
-        for event in pygame.event.get(): #registrar lo que sucede en la ventana
-            #print(event)
-            if event.type == pygame.QUIT:
-                sys.exit()
-        
-        ##----DRAW ZONE
-        
-        #pygame.draw.line(screen,BLACK,[0,0],[100,100],5)
+        #Window dimensions
+        self.w_height = 600
+        self.w_width = 600
 
-        ##----DRAW ZONE
+        self.blockSize = math.floor(self.w_width/10)
 
-        #world update
-        pygame.display.update()
+        self.size = (self.w_height,self.w_width)
+        #self.test = np.loadtxt("Prueba1.txt", dtype='i',delimiter=' ')
 
-def drawGrid(screen):
-    blockSize = math.floor(w_width/10)
-    for x in range(0,w_width,blockSize):
-        for y in range(0,w_height,blockSize):
-            rect = pygame.Rect(x,y,blockSize,blockSize)
-            pygame.draw.rect(screen,BLACK,rect,1)
+        #Colors
+        self.WHITE = (255,255,255)
+        self.BLACK = (0,0,0)
 
-def figures(screen, matriz):
 
-    aux = np.nditer(matriz,flags=['multi_index'])
-    print(aux)
-    for element in aux:
+    def drawState(self):
+        pygame.init()
+
+        #Create window
+        screen = pygame.display.set_mode(self.size)
+        screen.fill(self.WHITE)
+        self.figures(screen,self.initial_state)
+
+
+
+        while True:
                 
-                if element!=0:
-                    print("%d %s" % (element, aux.multi_index), end=' ')
-                    #print("img/"+str(element)+ ".jpg")
-                    fig = pygame.image.load("img/%d.jpg" % int(element)).convert()
-                    # Using blit to copy content from one surface to other
-                    screen.blit(fig, (aux.multi_index[1]*60+5, aux.multi_index[0]*60+5))
+            self.drawGrid(screen)
+            for event in pygame.event.get(): #registrar lo que sucede en la ventana
+                #print(event)
+                if event.type == pygame.QUIT:
+                    sys.exit()
+                
+            ##----DRAW ZONE
+                
+            #pygame.draw.line(screen,BLACK,[0,0],[100,100],5)
 
-main()
+            ##----DRAW ZONE
+
+            #world update
+            pygame.display.update()
+
+    def drawGrid(self, screen):
+        
+        for x in range(0,self.w_width,self.blockSize):
+            for y in range(0,self.w_height,self.blockSize):
+                rect = pygame.Rect(x,y,self.blockSize,self.blockSize)
+                pygame.draw.rect(screen,self.BLACK,rect,1)
+
+    def figures(self, screen, matriz):
+
+        aux = np.nditer(matriz,flags=['multi_index'])
+        print(aux)
+        for element in aux:
+                        
+            if element!=0:
+                print("%d %s" % (element, aux.multi_index), end=' ')
+                fig = pygame.image.load("img/%d.jpg" % int(element)).convert()
+                # Using blit to copy content from one surface to other
+                screen.blit(fig, (aux.multi_index[1]*self.blockSize+5, aux.multi_index[0]*self.blockSize+5))
+
+        
