@@ -39,8 +39,9 @@ class GameBoard:
         initialNode = node.Node(self.state, None, None, 1, 0, self.marioPos)
         queue.append(initialNode)
 
-        i = 0
-        while i < 1:
+        stop = True
+        while stop :
+
             if len(queue) == 0:
                 print("Falló, vas a perder IA")
             currentNode = queue.pop(0)
@@ -48,26 +49,57 @@ class GameBoard:
                 print("Voy a ganar IA")
             # expandir currentNode y meter hijos
             sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
-            if (sonGameBoard == currentNode.getGameBoard()).all():
-                queue.append(node.Node(sonGameBoard, currentNode, self.LEFT,
+            if not(np.array_equal(sonGameBoard,currentNode.getGameBoard())):
+                if(currentNode.getDepth()>1):
+                    if not(np.array_equal(sonGameBoard,currentNode.getFather().getGameBoard())):
+                        queue.append(node.Node(sonGameBoard, currentNode, self.LEFT,
+                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+
+                else:
+                    queue.append(node.Node(sonGameBoard, currentNode, self.LEFT,
                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+
+
 
             sonGameBoard, sonMarioPos = currentNode.move(self.DOWN)
-            if (sonGameBoard == currentNode.getGameBoard()).all():
-                queue.append(node.Node(sonGameBoard, currentNode, self.DOWN,
+            if not(np.array_equal(sonGameBoard,currentNode.getGameBoard())):
+                if(currentNode.getDepth()>1):
+                    if not(np.array_equal(sonGameBoard,currentNode.getFather().getGameBoard())):
+                        queue.append(node.Node(sonGameBoard, currentNode, self.DOWN,
                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+                
+                else:
+                    queue.append(node.Node(sonGameBoard, currentNode, self.DOWN,
+                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
 
             sonGameBoard, sonMarioPos = currentNode.move(self.RIGHT)
-            if (sonGameBoard == currentNode.getGameBoard()).all():
-                queue.append(node.Node(sonGameBoard, currentNode, self.RIGHT,
+            if not(np.array_equal(sonGameBoard,currentNode.getGameBoard())):
+                if(currentNode.getDepth()>1):
+                    if not(np.array_equal(sonGameBoard,currentNode.getFather().getGameBoard())):
+                        queue.append(node.Node(sonGameBoard, currentNode, self.RIGHT,
                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+
+                else:
+                    queue.append(node.Node(sonGameBoard, currentNode, self.RIGHT,
+                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
 
             sonGameBoard, sonMarioPos = currentNode.move(self.UP)
-            if (sonGameBoard == currentNode.getGameBoard()).all():
-                queue.append(node.Node(sonGameBoard, currentNode, self.UP,
+            if not(np.array_equal(sonGameBoard,currentNode.getGameBoard())):
+                if(currentNode.getDepth()>1):
+                    if not(np.array_equal(sonGameBoard,currentNode.getFather().getGameBoard())):
+                        queue.append(node.Node(sonGameBoard, currentNode, self.UP,
                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
 
-            i = i+1
+                else:
+                    queue.append(node.Node(sonGameBoard, currentNode, self.UP,
+                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+
+            stop = not currentNode.goalReached(self.yoshiPos)
+            
+
             print("length of queue", len(queue))
-            for element in queue:
-                print(element.getGameBoard())
+            #for element in queue:
+              #  print(element.getGameBoard())
+
+            if stop == False:
+                print(currentNode.getDepth()) 
