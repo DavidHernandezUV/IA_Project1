@@ -20,7 +20,9 @@ class GameBoard:
         self.state = state
         self.marioPos = [0, 0]
         self.yoshiPos = [0, 0]
-    # Where is Mario
+
+    # findPeople:
+    # Find Mario's and Yoshi's positions in the gameboard
 
     def findPeople(self):
         coordinatesMatrix = np.nditer(self.state, flags=['multi_index'])
@@ -33,73 +35,88 @@ class GameBoard:
         print("MARIO ESTÁ EN: ", self.marioPos)
         print("YOSHI ESTÁ EN: ", self.yoshiPos)
 
+    def avoidGoingBack(gameboard, sonGameboard, direction):
+        pass
+    # searchByAmplitude
+    # Searchs by amplitude :D
+
     def searchByAmplitude(self):
 
         queue = []
-        initialNode = node.Node(self.state, None, None, 1, 0, self.marioPos)
+        initialNode = node.Node(self.state, None, None, 0, 0, self.marioPos)
         queue.append(initialNode)
 
-        stop = True
-        while stop :
+        while True:
 
             if len(queue) == 0:
                 print("Falló, vas a perder IA")
+
+            # currentNode is now initial node and queue becomes empty
             currentNode = queue.pop(0)
+
+            # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
                 print("Voy a ganar IA")
-            # expandir currentNode y meter hijos
-            sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
-            if not(np.array_equal(sonGameBoard,currentNode.getGameBoard())):
-                if(currentNode.getDepth()>1):
-                    if not(np.array_equal(sonGameBoard,currentNode.getFather().getGameBoard())):
-                        queue.append(node.Node(sonGameBoard, currentNode, self.LEFT,
-                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+                break
 
+            # expand currentNode with the possible directions
+            sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
+
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                # If the current node is not the initial, it has grandparents
+                if (currentNode.getDepth() > 0):
+                    # Check if the new node is different from the grandparent, TO AVOID GOING BACK
+                    if not (np.array_equal(sonGameBoard, currentNode.getFather().getGameBoard())):
+                        queue.append(node.Node(sonGameBoard, currentNode, self.LEFT,
+                                               currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+                # If the node is the initial node, the new node is added without checking if it can go back
                 else:
                     queue.append(node.Node(sonGameBoard, currentNode, self.LEFT,
-                                       currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
-
-
+                                           currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
 
             sonGameBoard, sonMarioPos = currentNode.move(self.DOWN)
-            if not(np.array_equal(sonGameBoard,currentNode.getGameBoard())):
-                if(currentNode.getDepth()>1):
-                    if not(np.array_equal(sonGameBoard,currentNode.getFather().getGameBoard())):
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                # If the current node is not the initial, it has grandparents
+                if (currentNode.getDepth() > 0):
+                    if not (np.array_equal(sonGameBoard, currentNode.getFather().getGameBoard())):
                         queue.append(node.Node(sonGameBoard, currentNode, self.DOWN,
-                                       currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
-                
+                                               currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+
                 else:
                     queue.append(node.Node(sonGameBoard, currentNode, self.DOWN,
-                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+                                           currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
 
             sonGameBoard, sonMarioPos = currentNode.move(self.RIGHT)
-            if not(np.array_equal(sonGameBoard,currentNode.getGameBoard())):
-                if(currentNode.getDepth()>1):
-                    if not(np.array_equal(sonGameBoard,currentNode.getFather().getGameBoard())):
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                # If the current node is not the initial, it has grandparents
+                if (currentNode.getDepth() > 0):
+                    if not (np.array_equal(sonGameBoard, currentNode.getFather().getGameBoard())):
                         queue.append(node.Node(sonGameBoard, currentNode, self.RIGHT,
-                                       currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+                                               currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
 
                 else:
                     queue.append(node.Node(sonGameBoard, currentNode, self.RIGHT,
-                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+                                           currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
 
             sonGameBoard, sonMarioPos = currentNode.move(self.UP)
-            if not(np.array_equal(sonGameBoard,currentNode.getGameBoard())):
-                if(currentNode.getDepth()>1):
-                    if not(np.array_equal(sonGameBoard,currentNode.getFather().getGameBoard())):
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                # If the current node is not the initial, it has grandparents
+                if (currentNode.getDepth() > 0):
+                    if not (np.array_equal(sonGameBoard, currentNode.getFather().getGameBoard())):
                         queue.append(node.Node(sonGameBoard, currentNode, self.UP,
-                                       currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+                                               currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
 
                 else:
                     queue.append(node.Node(sonGameBoard, currentNode, self.UP,
-                                        currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+                                           currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
 
-            stop = not currentNode.goalReached(self.yoshiPos)
-            
-
+            print(list(map(lambda x: x.getMarioPos(), queue)))
             print("length of queue", len(queue))
-            #for element in queue:
-              #  print(element.getGameBoard())
+            # for element in queue:
+            #  print(element.getGameBoard())
 
-            if stop == False:
-                print(currentNode.getDepth()) 
+        print(currentNode.getDepth())

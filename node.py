@@ -25,6 +25,9 @@ class Node:
         self.marioPos = marioPos
         self.cost = cost
 
+    def getMarioPos(self):
+        return self.marioPos
+
     def getGameBoard(self):
         return self.gameBoard
 
@@ -37,18 +40,23 @@ class Node:
     def getFather(self):
         return self.father
 
+    # move: number -> matrix, tuple
+    # Checks if it is possible to move in a given direction (not going through block or limit)
     def move(self, direction):
 
+        # create copied son
         sonGameBoard = np.array(self.gameBoard, copy=True)
         sonMarioPosition = self.marioPos
+
+        # Checks if there is no limit or block
         # MOVE TO LEFT
-        if direction == self.LEFT and (self.marioPos[1]-1 >= 0) and  (sonGameBoard[self.marioPos[0]][self.marioPos[1]-1] != self.BLOCK):
+        if direction == self.LEFT and (self.marioPos[1]-1 >= 0) and (sonGameBoard[self.marioPos[0]][self.marioPos[1]-1] != self.BLOCK):
             sonGameBoard[self.marioPos[0]][self.marioPos[1]-1] = self.MARIO
             sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
             # New Mario position
             sonMarioPosition = (self.marioPos[0], self.marioPos[1]-1)
         # MOVE TO DOWN
-        if direction == self.DOWN  and (self.marioPos[0]+1 <= self.ROWS-1) and (sonGameBoard[self.marioPos[0]+1][self.marioPos[1]] != self.BLOCK):
+        if direction == self.DOWN and (self.marioPos[0]+1 <= self.ROWS-1) and (sonGameBoard[self.marioPos[0]+1][self.marioPos[1]] != self.BLOCK):
             sonGameBoard[self.marioPos[0]+1][self.marioPos[1]] = self.MARIO
             sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
             # New Mario position
@@ -60,13 +68,11 @@ class Node:
             # New Mario position
             sonMarioPosition = (self.marioPos[0], self.marioPos[1]+1)
         # MOVE TO UP
-        if direction == self.UP  and (self.marioPos[0]-1 >= 0) and (sonGameBoard[self.marioPos[0]-1][self.marioPos[1]] != self.BLOCK):
+        if direction == self.UP and (self.marioPos[0]-1 >= 0) and (sonGameBoard[self.marioPos[0]-1][self.marioPos[1]] != self.BLOCK):
             sonGameBoard[self.marioPos[0]-1][self.marioPos[1]] = self.MARIO
             sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
             # New Mario position
             sonMarioPosition = (self.marioPos[0]-1, self.marioPos[1])
-
-        #print(sonGameBoard, sonMarioPosition)
 
         return sonGameBoard, sonMarioPosition
 
@@ -80,5 +86,4 @@ class Node:
         print(self.gameBoard)
 
     def goalReached(self, yoshiPos):
-        print(self.marioPos, yoshiPos)
         return self.marioPos == yoshiPos
