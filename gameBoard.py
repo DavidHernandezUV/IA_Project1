@@ -16,10 +16,22 @@ class GameBoard:
     KOOPA = 5
     YOSHI = 6
 
+    #Costs
+    KOOPA_COST = 5
+    MOVE_COST = 1
+    MOVE_WITH_STAR_COST = 0.5
+
+    #Powerups
+    flowers_acum = 0
+    star_effect = 0
+
     def __init__(self, state):
         self.state = state
         self.marioPos = [0, 0]
         self.yoshiPos = [0, 0]
+        self.starsPos = []
+        self.flowersPos = []
+        self.koopasPos = []
 
     # findPeople:
     # Find Mario's and Yoshi's positions in the gameboard
@@ -31,24 +43,35 @@ class GameBoard:
                 self.marioPos = coordinatesMatrix.multi_index
             if element == self.YOSHI:
                 self.yoshiPos = coordinatesMatrix.multi_index
+            if element == self.KOOPA:
+                self.koopasPos.append(coordinatesMatrix.multi_index)
+            if element == self.FLOWER:
+                self.flowersPos.append(coordinatesMatrix.multi_index)
+            if element == self.STAR:
+                self.starsPos.append(coordinatesMatrix.multi_index)
+            
 
         print("MARIO ESTÁ EN: ", self.marioPos)
         print("YOSHI ESTÁ EN: ", self.yoshiPos)
+        print("KOOPAS ESTÁN EN: ", self.koopasPos)
+        print("FLOWERS ESTÁN EN: ", self.flowersPos)
+        print("STAR ESTÁN EN: ", self.starsPos)
 
     # avoidGoingback: Node, array, matrix, tuple, number
     # Checks if the son is different from the grandparent, so that it avoids going back
 
-    def avoidGoingBack(self, currentNode, queue, sonGameBoard, sonMarioPos, direction):
+    def avoidGoingBack(self, currentNode, queue, sonGameBoard, sonMarioPos, direction, cost):
         # If the current node is not the initial, it has grandparents
         if (currentNode.getDepth() > 0):
             # Check if the new node is different from the grandparent, TO AVOID GOING BACK
             if not (np.array_equal(sonGameBoard, currentNode.getFather().getGameBoard())):
                 queue.append(node.Node(sonGameBoard, currentNode, direction,
-                                       currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+                                       currentNode.getDepth()+1, currentNode.getCost()+cost, sonMarioPos, currentNode.getStarsPos(),currentNode.getFlowersPos(),currentNode.getKoopasPos()))
         # If the node is the initial node, the new node is added without checking if it can go back
         else:
+            print("VALUES: ",currentNode.getCost(),cost,currentNode.getMarioPos(), direction)
             queue.append(node.Node(sonGameBoard, currentNode, direction,
-                                   currentNode.getDepth()+1, currentNode.getCost()+1, sonMarioPos))
+                                   currentNode.getDepth()+1, currentNode.getCost()+cost, sonMarioPos, currentNode.getStarsPos(),currentNode.getFlowersPos(),currentNode.getKoopasPos()))
 
     # searchByAmplitude
     # Searchs by amplitude :D
@@ -56,7 +79,8 @@ class GameBoard:
     def searchByAmplitude(self):
 
         queue = []
-        initialNode = node.Node(self.state, None, None, 0, 0, self.marioPos)
+        initialNode = node.Node(self.state, None, None, 0, 0, self.marioPos, self.starsPos,self.flowersPos,self.koopasPos)
+        print("initialNodeCost: ", initialNode.getCost())
         queue.append(initialNode)
 
         while True:
@@ -66,6 +90,58 @@ class GameBoard:
 
             # currentNode is now initial node and queue becomes empty
             currentNode = queue.pop(0)
+            print("currentNodeCost: ", currentNode.getCost())
+            # Checks if the position of Mario equals Yoshi's
+            if currentNode.goalReached(self.yoshiPos):
+                print("Voy a ganar IA")
+                break
+
+            # expand currentNode with the possible directions
+            sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
+
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.LEFT,self.MOVE_COST)
+
+            sonGameBoard, sonMarioPos = currentNode.move(self.DOWN)
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.DOWN,self.MOVE_COST)
+
+            sonGameBoard, sonMarioPos = currentNode.move(self.RIGHT)
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.RIGHT,self.MOVE_COST)
+
+            sonGameBoard, sonMarioPos = currentNode.move(self.UP)
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.UP,self.MOVE_COST)
+            print(list(map(lambda x: x.getMarioPos(), queue)))
+            print("length of queue", len(queue))
+            # for element in queue:
+            #  print(element.getGameBoard())
+
+        print(currentNode.getDepth())
+    
+
+    def searchByCost(self):
+
+        queue = []
+        initialNode = node.Node(self.state, None, None, 0, 0, self.marioPos, self.starsPos,self.flowersPos,self.koopasPos)
+        queue.append(initialNode)
+
+        while True:
+
+            if len(queue) == 0:
+                print("Falló, vas a perder IA")
+
+            # currentNode is now initial node and queue becomes empty
+            currentNode = queue.pop(self.selectNodeByCost(queue))
 
             # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
@@ -78,28 +154,42 @@ class GameBoard:
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.LEFT)
+                                    sonGameBoard, sonMarioPos, self.LEFT,self.routeCost())
 
             sonGameBoard, sonMarioPos = currentNode.move(self.DOWN)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.DOWN)
+                                    sonGameBoard, sonMarioPos, self.DOWN,self.routeCost())
 
             sonGameBoard, sonMarioPos = currentNode.move(self.RIGHT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.RIGHT)
+                                    sonGameBoard, sonMarioPos, self.RIGH,self.routeCost())
 
             sonGameBoard, sonMarioPos = currentNode.move(self.UP)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.UP)
+                                    sonGameBoard, sonMarioPos, self.UP,self.routeCost())
             print(list(map(lambda x: x.getMarioPos(), queue)))
             print("length of queue", len(queue))
             # for element in queue:
             #  print(element.getGameBoard())
 
         print(currentNode.getDepth())
+    
+        
+
+    def selectNodeByCost(self,queue):
+
+        nodeSelected = queue[0]
+        nodeIndex = 0
+        #simple movement
+        for index, node in queue:  
+            if nodeSelected.getCost() > node.getCost():
+                nodeSelected = node
+                nodeIndex = index
+                
+        return nodeIndex

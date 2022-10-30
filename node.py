@@ -15,7 +15,17 @@ class Node:
     KOOPA = 5
     YOSHI = 6
 
-    def __init__(self, gameBoard, father, operator, depth, cost, marioPos):
+    #Costs
+    KOOPA_COST = 5
+    MOVE_COST = 1
+    MOVE_WITH_STAR_COST = 0.5
+
+    #Powerups
+    flowers_acum = 0
+    star_effect = 0
+
+
+    def __init__(self, gameBoard, father, operator, depth, cost, marioPos, starsPos,flowersPos,koopasPos):
         self.gameBoard = gameBoard
         self.father = father
         self.operator = operator
@@ -24,6 +34,9 @@ class Node:
         self.COLS = len(gameBoard[0])
         self.marioPos = marioPos
         self.cost = cost
+        self.starsPos = starsPos
+        self.flowersPos = flowersPos
+        self.koopasPos = koopasPos
 
     def getMarioPos(self):
         return self.marioPos
@@ -39,6 +52,15 @@ class Node:
 
     def getFather(self):
         return self.father
+    
+    def getStarsPos(self):
+        return self.starsPos;
+    
+    def getFlowersPos(self):
+        return self.starsPos;
+
+    def getKoopasPos(self):
+        return self.starsPos;
 
     # move: number -> matrix, tuple
     # Checks if it is possible to move in a given direction (not going through block or limit)
@@ -55,6 +77,8 @@ class Node:
             sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
             # New Mario position
             sonMarioPosition = (self.marioPos[0], self.marioPos[1]-1)
+        
+            
         # MOVE TO DOWN
         if direction == self.DOWN and (self.marioPos[0]+1 <= self.ROWS-1) and (sonGameBoard[self.marioPos[0]+1][self.marioPos[1]] != self.BLOCK):
             sonGameBoard[self.marioPos[0]+1][self.marioPos[1]] = self.MARIO
@@ -74,6 +98,7 @@ class Node:
             # New Mario position
             sonMarioPosition = (self.marioPos[0]-1, self.marioPos[1])
 
+        self.cost = self.checkCost(sonMarioPosition)
         return sonGameBoard, sonMarioPosition
 
     def showDepth(self):
@@ -87,3 +112,8 @@ class Node:
 
     def goalReached(self, yoshiPos):
         return self.marioPos == yoshiPos
+
+    def checkCost(self, sonMarioPosition):
+        queHay = self.gameBoard[sonMarioPosition]
+        print("checkcoust:", queHay)
+        
