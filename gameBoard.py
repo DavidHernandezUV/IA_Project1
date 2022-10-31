@@ -32,6 +32,7 @@ class GameBoard:
         self.starsPos = []
         self.flowersPos = []
         self.koopasPos = []
+        self.solution = []
 
     # findPeople:
     # Find Mario's and Yoshi's positions in the gameboard
@@ -93,7 +94,9 @@ class GameBoard:
             currentNode = queue.pop(0)
             # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
+
                 print("Voy a ganar IA")
+                self.findSolution(currentNode)
                 break
 
             # expand currentNode with the possible directions
@@ -146,12 +149,8 @@ class GameBoard:
 
             # currentNode is now initial node and queue becomes empty
             currentNode = queue.pop(self.selectNodeByCost(queue))
-            print("Mario Pos:", currentNode.getMarioPos())
-            print("currentNodeCost: ", currentNode.getCost())
             # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
-                print("Costo: ", currentNode.getCost())
-                print("Voy a ganar IA")
                 self.findSolution(currentNode)
                 break
 
@@ -188,7 +187,8 @@ class GameBoard:
             print("length of queue", len(queue))
             # for element in queue:
             #  print(element.getGameBoard())
-
+        print("Mario Pos:", currentNode.getMarioPos())
+        print("currentNodeCost: ", currentNode.getCost())
         print(currentNode.getDepth())
 
     def selectNodeByCost(self, queue):
@@ -205,9 +205,17 @@ class GameBoard:
 
     def findSolution(self, currentNode):
         solutions = []
+        costos = []
         while currentNode != None:
             currentGameBoard = currentNode.getGameBoard()
             solutions.append(currentGameBoard)
+            costos.append(currentNode.getCost())
             currentNode = currentNode.getFather()
         solutionsOrdered = solutions[::-1]
-        print(solutionsOrdered)
+        costsF = costos[::-1]
+        self.solution = solutionsOrdered
+        print(costsF)
+        # print(solutionsOrdered)
+
+    def getSolution(self):
+        return self.solution
