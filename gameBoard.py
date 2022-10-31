@@ -69,7 +69,7 @@ class GameBoard:
                                        currentNode.getDepth()+1, currentNode.getCost()+cost, sonMarioPos, currentNode.getStarsPos(),currentNode.getFlowersPos(),currentNode.getKoopasPos()))
         # If the node is the initial node, the new node is added without checking if it can go back
         else:
-            print("VALUES: ",currentNode.getCost(),cost,currentNode.getMarioPos(), direction)
+            print("VALUES: ",currentNode.getCost(),cost,currentNode.getStarsPos(), direction)
             queue.append(node.Node(sonGameBoard, currentNode, direction,
                                    currentNode.getDepth()+1, currentNode.getCost()+cost, sonMarioPos, currentNode.getStarsPos(),currentNode.getFlowersPos(),currentNode.getKoopasPos()))
 

@@ -98,7 +98,7 @@ class Node:
             # New Mario position
             sonMarioPosition = (self.marioPos[0]-1, self.marioPos[1])
 
-        self.cost = self.checkCost(sonMarioPosition)
+        self.cost = self.checkCost(sonMarioPosition, direction)
         return sonGameBoard, sonMarioPosition
 
     def showDepth(self):
@@ -113,7 +113,8 @@ class Node:
     def goalReached(self, yoshiPos):
         return self.marioPos == yoshiPos
 
-    def checkCost(self, sonMarioPosition):
-        queHay = self.gameBoard[sonMarioPosition]
-        print("checkcoust:", queHay)
+    def checkCost(self, sonMarioPosition, direction):
+        gameCharacter = self.gameBoard[sonMarioPosition]
+        print("checkcoust:", gameCharacter, direction)
+        return 1
         
