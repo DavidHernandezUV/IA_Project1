@@ -152,6 +152,7 @@ class GameBoard:
             if currentNode.goalReached(self.yoshiPos):
                 print("Costo: ", currentNode.getCost())
                 print("Voy a ganar IA")
+                self.findSolution(currentNode)
                 break
 
             # expand currentNode with the possible directions
@@ -201,3 +202,12 @@ class GameBoard:
                 nodeIndex = index
 
         return nodeIndex
+
+    def findSolution(self, currentNode):
+        solutions = []
+        while currentNode != None:
+            currentGameBoard = currentNode.getGameBoard()
+            solutions.append(currentGameBoard)
+            currentNode = currentNode.getFather()
+        solutionsOrdered = solutions[::-1]
+        print(solutionsOrdered)
