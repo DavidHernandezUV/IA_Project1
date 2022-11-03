@@ -32,12 +32,23 @@ class Node:
         self.ROWS = len(gameBoard)
         self.COLS = len(gameBoard[0])
         self.marioPos = marioPos
-        self.cost = cost
+
+        if depth == 0:
+            self.cost = 0
+            self.flowers_acum = 0
+            self.star_effect = 0
+        else:
+
+            self.star_effect = father.getStar_effect()
+            self.flowers_acum = father.getFlower_effect()
+            self.cost = father.getCost() + self.checkCost()
+            # should spend before taking any a powerup
+            self.spendPowerUps()
+            self.checkPowerUps()
+
         self.starsPos = starsPos
         self.flowersPos = flowersPos
         self.koopasPos = koopasPos
-        self.flowers_acum = flowers_acum
-        self.star_effect = star_effect
 
     def getMarioPos(self):
         return self.marioPos
@@ -66,8 +77,11 @@ class Node:
     def getStar_effect(self):
         return self.star_effect
 
+    def getFlower_effect(self):
+        return self.flowers_acum
     # move: number -> matrix, tuple
     # Checks if it is possible to move in a given direction (not going through block or limit)
+
     def move(self, direction):
 
         # create copied son
@@ -83,45 +97,27 @@ class Node:
             sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
             # New Mario position
             sonMarioPosition = (self.marioPos[0], self.marioPos[1]-1)
-            # Checks if it can pick up a power up
-            flowers_acum, star_effect = self.checkPowerUps(sonMarioPosition)
-            # Find the cost of the new position
-            cost = self.checkCost(sonMarioPosition)
-            star_effect = self.spendPowerUps(star_effect)
 
         # MOVE TO DOWN
-        if direction == self.DOWN and (self.marioPos[0]+1 <= self.ROWS-1) and (sonGameBoard[self.marioPos[0]+1][self.marioPos[1]] != self.BLOCK):
+        elif direction == self.DOWN and (self.marioPos[0]+1 <= self.ROWS-1) and (sonGameBoard[self.marioPos[0]+1][self.marioPos[1]] != self.BLOCK):
             sonGameBoard[self.marioPos[0]+1][self.marioPos[1]] = self.MARIO
             sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
             # New Mario position
             sonMarioPosition = (self.marioPos[0]+1, self.marioPos[1])
-            # Checks if it can pick up a power up
-            flowers_acum, star_effect = self.checkPowerUps(sonMarioPosition)
-            # Find the cost of the new position
-            cost = self.checkCost(sonMarioPosition)
-            star_effect = self.spendPowerUps(star_effect)
+
         # MOVE TO RIGHT
-        if direction == self.RIGHT and (self.marioPos[1]+1 <= self.COLS-1) and (sonGameBoard[self.marioPos[0]][self.marioPos[1]+1] != self.BLOCK):
+        elif direction == self.RIGHT and (self.marioPos[1]+1 <= self.COLS-1) and (sonGameBoard[self.marioPos[0]][self.marioPos[1]+1] != self.BLOCK):
             sonGameBoard[self.marioPos[0]][self.marioPos[1]+1] = self.MARIO
             sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
             # New Mario position
             sonMarioPosition = (self.marioPos[0], self.marioPos[1]+1)
-            # Checks if it can pick up a power up
-            flowers_acum, star_effect = self.checkPowerUps(sonMarioPosition)
-            # Find the cost of the new position
-            cost = self.checkCost(sonMarioPosition)
-            star_effect = self.spendPowerUps(star_effect)
+
         # MOVE TO UP
-        if direction == self.UP and (self.marioPos[0]-1 >= 0) and (sonGameBoard[self.marioPos[0]-1][self.marioPos[1]] != self.BLOCK):
+        elif direction == self.UP and (self.marioPos[0]-1 >= 0) and (sonGameBoard[self.marioPos[0]-1][self.marioPos[1]] != self.BLOCK):
             sonGameBoard[self.marioPos[0]-1][self.marioPos[1]] = self.MARIO
             sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
             # New Mario position
             sonMarioPosition = (self.marioPos[0]-1, self.marioPos[1])
-            # Checks if it can pick up a power up
-            flowers_acum, star_effect = self.checkPowerUps(sonMarioPosition)
-            # Find the cost of the new position
-            cost = self.checkCost(sonMarioPosition)
-            star_effect = self.spendPowerUps(star_effect)
 
         return sonGameBoard, sonMarioPosition, cost, flowers_acum, star_effect
 
@@ -137,26 +133,29 @@ class Node:
     def goalReached(self, yoshiPos):
         return self.marioPos == yoshiPos
 
-    def checkPowerUps(self, sonMarioPosition):
-        gameCharacter = self.gameBoard[sonMarioPosition]
+    def checkPowerUps(self):
+        gameCharacter = self.father.getGameBoard()[self.marioPos]
         if gameCharacter == self.FLOWER and self.star_effect == 0:
             self.flowers_acum += self.BULLETS
         if gameCharacter == self.STAR and self.flowers_acum == 0:
             self.star_effect += self.STAR_POWER
-            print("Cogí una estrella en: ", sonMarioPosition, self.star_effect)
-        return self.flowers_acum, self.star_effect
 
-    def checkCost(self, sonMarioPosition):
-        gameCharacter = self.gameBoard[sonMarioPosition]
-        if self.star_effect > 0:
+    # checkCost: int
+    # returns the cost of the movement that has been done
+    def checkCost(self):
+        gameCharacter = self.father.getGameBoard()[self.marioPos]
 
+        if self.getStar_effect() > 0:
             return self.MOVE_WITH_STAR_COST
         else:
-            # Check if the new Mario position is empty
+
             if gameCharacter == self.EMPTY:
                 return self.MOVE_COST
             if gameCharacter == self.KOOPA:
-                return self.MOVE_COST + self.KOOPA
+                if self.flowers_acum > 0:
+                    return self.MOVE_COST
+                else:
+                    return self.MOVE_COST + self.KOOPA
             if gameCharacter == self.FLOWER:
                 return self.MOVE_COST
             if gameCharacter == self.STAR:
@@ -164,7 +163,14 @@ class Node:
             if gameCharacter == self.YOSHI:
                 return self.MOVE_COST
 
-    def spendPowerUps(self, star_effect):
-        if star_effect > 0:
-            star_effect -= 1
-        return star_effect
+    # spendPowerUps:
+    # This function check the necesary spends by actions
+    def spendPowerUps(self):
+
+        gameCharacter = self.father.getGameBoard()[self.marioPos]
+        if self.flowers_acum > 0:
+            if gameCharacter == self.KOOPA:
+                self.flowers_acum -= 1
+
+        if self.star_effect > 0:
+            self.star_effect -= 1
