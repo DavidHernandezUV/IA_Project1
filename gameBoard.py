@@ -78,8 +78,7 @@ class GameBoard:
     def searchByAmplitude(self):
 
         queue = []
-        initialNode = node.Node(self.state, None, None, 0, 0, self.marioPos,
-                                self.starsPos, self.flowersPos, self.koopasPos, 0, 0)
+        initialNode = node.Node(self.state, None, None, 0, self.marioPos)
         print("initialNodeCost: ", initialNode.getCost())
         queue.append(initialNode)
 
@@ -98,39 +97,38 @@ class GameBoard:
                 break
 
             # expand currentNode with the possible directions
-            sonGameBoard, sonMarioPos, tempCost, flowers_acum, star_effect = currentNode.move(
-                self.LEFT)
-
+            sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.LEFT, self.MOVE_COST, flowers_acum, star_effect)
+                                    sonGameBoard, sonMarioPos, self.LEFT)
 
-            sonGameBoard, sonMarioPos, tempCost, flowers_acum, star_effect = currentNode.move(
+            sonGameBoard, sonMarioPos = currentNode.move(
                 self.DOWN)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.DOWN, self.MOVE_COST, flowers_acum, star_effect)
+                                    sonGameBoard, sonMarioPos, self.DOWN)
 
-            sonGameBoard, sonMarioPos, tempCost, flowers_acum, star_effect = currentNode.move(
+            sonGameBoard, sonMarioPos = currentNode.move(
                 self.RIGHT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.RIGHT, self.MOVE_COST, flowers_acum, star_effect)
+                                    sonGameBoard, sonMarioPos, self.RIGHT)
 
-            sonGameBoard, sonMarioPos, tempCost, flowers_acum, star_effect = currentNode.move(
+            sonGameBoard, sonMarioPos = currentNode.move(
                 self.UP)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.UP, self.MOVE_COST, flowers_acum, star_effect)
-            print(list(map(lambda x: x.getMarioPos(), queue)))
-            print("length of queue", len(queue))
+                                    sonGameBoard, sonMarioPos, self.UP)
+           # print(list(map(lambda x: x.getMarioPos(), queue)))
+            #print("length of queue", len(queue))
             # for element in queue:
             #  print(element.getGameBoard())
-
+        print("Mario Pos:", currentNode.getMarioPos())
+        print("currentNodeCost: ", currentNode.getCost())
         print(currentNode.getDepth())
 
     def searchByCost(self):
