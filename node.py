@@ -24,7 +24,7 @@ class Node:
     STAR_POWER = 6
     BULLETS = 1
 
-    def __init__(self, gameBoard, father, operator, depth, cost, marioPos, starsPos, flowersPos, koopasPos, flowers_acum, star_effect):
+    def __init__(self, gameBoard, father, operator, depth, marioPos):
         self.gameBoard = gameBoard
         self.father = father
         self.operator = operator
@@ -46,10 +46,6 @@ class Node:
             self.spendPowerUps()
             self.checkPowerUps()
 
-        self.starsPos = starsPos
-        self.flowersPos = flowersPos
-        self.koopasPos = koopasPos
-
     def getMarioPos(self):
         return self.marioPos
 
@@ -64,14 +60,6 @@ class Node:
 
     def getFather(self):
         return self.father
-
-    def getStarsPos(self):
-        return self.starsPos
-
-    def getFlowersPos(self):
-        return self.flowersPos
-
-    def getKoopasPos(self):
         return self.koopasPos
 
     def getStar_effect(self):
@@ -119,7 +107,7 @@ class Node:
             # New Mario position
             sonMarioPosition = (self.marioPos[0]-1, self.marioPos[1])
 
-        return sonGameBoard, sonMarioPosition, cost, flowers_acum, star_effect
+        return sonGameBoard, sonMarioPosition
 
     def showDepth(self):
         print("La profundidad del nodo es:", self.depth)

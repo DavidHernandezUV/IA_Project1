@@ -60,19 +60,17 @@ class GameBoard:
     # avoidGoingback: Node, array, matrix, tuple, number
     # Checks if the son is different from the grandparent, so that it avoids going back
 
-    def avoidGoingBack(self, currentNode, queue, sonGameBoard, sonMarioPos, direction, cost, flowers_acum, star_effect):
+    def avoidGoingBack(self, currentNode, queue, sonGameBoard, sonMarioPos, direction):
         # If the current node is not the initial, it has grandparents
         if (currentNode.getDepth() > 0):
             # Check if the new node is different from the grandparent, TO AVOID GOING BACK
             if not (np.array_equal(sonGameBoard, currentNode.getFather().getGameBoard())):
                 queue.append(node.Node(sonGameBoard, currentNode, direction,
-                                       currentNode.getDepth()+1, currentNode.getCost()+cost, sonMarioPos, currentNode.getStarsPos(), currentNode.getFlowersPos(), currentNode.getKoopasPos(), flowers_acum, star_effect))
+                                       currentNode.getDepth()+1, sonMarioPos))
         # If the node is the initial node, the new node is added without checking if it can go back
         else:
-            print("VALUES: ", currentNode.getCost(), cost,
-                  currentNode.getStarsPos(), direction)
             queue.append(node.Node(sonGameBoard, currentNode, direction,
-                                   currentNode.getDepth()+1, currentNode.getCost()+cost, sonMarioPos, currentNode.getStarsPos(), currentNode.getFlowersPos(), currentNode.getKoopasPos(), flowers_acum, star_effect))
+                                   currentNode.getDepth()+1, sonMarioPos))
 
     # searchByAmplitude
     # Searchs by amplitude :D
@@ -138,8 +136,7 @@ class GameBoard:
     def searchByCost(self):
 
         queue = []
-        initialNode = node.Node(self.state, None, None, 0, 0, self.marioPos,
-                                self.starsPos, self.flowersPos, self.koopasPos, 0, 0)
+        initialNode = node.Node(self.state, None, None, 0, self.marioPos)
         queue.append(initialNode)
 
         while True:
@@ -155,36 +152,34 @@ class GameBoard:
                 break
 
             # expand currentNode with the possible directions
-            sonGameBoard, sonMarioPos, tempCost, flowers_acum, star_effect = currentNode.move(
-                self.LEFT)
+            sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.LEFT, tempCost, flowers_acum, star_effect)
+                                    sonGameBoard, sonMarioPos, self.LEFT)
 
-            sonGameBoard, sonMarioPos, tempCost, flowers_acum, star_effect = currentNode.move(
+            sonGameBoard, sonMarioPos = currentNode.move(
                 self.DOWN)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.DOWN, tempCost, flowers_acum, star_effect)
+                                    sonGameBoard, sonMarioPos, self.DOWN)
 
-            sonGameBoard, sonMarioPos,  tempCost, flowers_acum, star_effect = currentNode.move(
+            sonGameBoard, sonMarioPos = currentNode.move(
                 self.RIGHT)
-            print("tempcost RIGHT", tempCost)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.RIGHT, tempCost, flowers_acum, star_effect)
+                                    sonGameBoard, sonMarioPos, self.RIGHT)
 
-            sonGameBoard, sonMarioPos, tempCost, flowers_acum, star_effect = currentNode.move(
+            sonGameBoard, sonMarioPos = currentNode.move(
                 self.UP)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                 self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.UP, tempCost, flowers_acum, star_effect)
+                                    sonGameBoard, sonMarioPos, self.UP)
            # print(list(map(lambda x: x.getMarioPos(), queue)))
-            print("length of queue", len(queue))
+            #print("length of queue", len(queue))
             # for element in queue:
             #  print(element.getGameBoard())
         print("Mario Pos:", currentNode.getMarioPos())
