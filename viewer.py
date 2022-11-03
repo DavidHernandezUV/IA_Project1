@@ -1,5 +1,6 @@
 import pygame, sys, math
 import numpy as np
+import time
 
 
 class Viewer:
@@ -28,13 +29,18 @@ class Viewer:
 
         #Create window
         screen = pygame.display.set_mode(self.size)
-        screen.fill(self.WHITE)
-        self.figures(screen,self.initial_state)
+        
+        
 
 
 
         while True:
-                
+            
+            time.sleep(0.5)   
+            if not(len(self.initial_state) == 0):
+                screen.fill((0,0,0))
+                screen.fill(self.WHITE)
+                self.figures(screen,self.initial_state.pop(0))
             self.drawGrid(screen)
             for event in pygame.event.get(): #registrar lo que sucede en la ventana
                 #print(event)
@@ -48,6 +54,7 @@ class Viewer:
             ##----DRAW ZONE
 
             #world update
+            
             pygame.display.update()
 
     def drawGrid(self, screen):
