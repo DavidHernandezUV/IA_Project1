@@ -75,35 +75,51 @@ class Node:
         # create copied son
         sonGameBoard = np.array(self.gameBoard, copy=True)
         sonMarioPosition = self.marioPos
-        cost = 0
-        flowers_acum = 0
-        star_effect = 0
         # Checks if there is no limit or block
         # MOVE TO LEFT
         if direction == self.LEFT and (self.marioPos[1]-1 >= 0) and (sonGameBoard[self.marioPos[0]][self.marioPos[1]-1] != self.BLOCK):
             sonGameBoard[self.marioPos[0]][self.marioPos[1]-1] = self.MARIO
-            sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
+            if self.depth > 0:
+                sonGameBoard[self.marioPos[0]][self.marioPos[1]
+                                               ] = self.checkNoPowerRepeat()
+            else:
+                sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
             # New Mario position
             sonMarioPosition = (self.marioPos[0], self.marioPos[1]-1)
 
         # MOVE TO DOWN
         elif direction == self.DOWN and (self.marioPos[0]+1 <= self.ROWS-1) and (sonGameBoard[self.marioPos[0]+1][self.marioPos[1]] != self.BLOCK):
             sonGameBoard[self.marioPos[0]+1][self.marioPos[1]] = self.MARIO
-            sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
+            if self.depth > 0:
+                sonGameBoard[self.marioPos[0]][self.marioPos[1]
+                                               ] = self.checkNoPowerRepeat()
+            else:
+                sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
+
             # New Mario position
             sonMarioPosition = (self.marioPos[0]+1, self.marioPos[1])
 
         # MOVE TO RIGHT
         elif direction == self.RIGHT and (self.marioPos[1]+1 <= self.COLS-1) and (sonGameBoard[self.marioPos[0]][self.marioPos[1]+1] != self.BLOCK):
             sonGameBoard[self.marioPos[0]][self.marioPos[1]+1] = self.MARIO
-            sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
+            if self.depth > 0:
+                sonGameBoard[self.marioPos[0]][self.marioPos[1]
+                                               ] = self.checkNoPowerRepeat()
+            else:
+                sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
+
             # New Mario position
             sonMarioPosition = (self.marioPos[0], self.marioPos[1]+1)
 
         # MOVE TO UP
         elif direction == self.UP and (self.marioPos[0]-1 >= 0) and (sonGameBoard[self.marioPos[0]-1][self.marioPos[1]] != self.BLOCK):
             sonGameBoard[self.marioPos[0]-1][self.marioPos[1]] = self.MARIO
-            sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
+            if self.depth > 0:
+                sonGameBoard[self.marioPos[0]][self.marioPos[1]
+                                               ] = self.checkNoPowerRepeat()
+            else:
+                sonGameBoard[self.marioPos[0]][self.marioPos[1]] = self.EMPTY
+
             # New Mario position
             sonMarioPosition = (self.marioPos[0]-1, self.marioPos[1])
 
@@ -162,3 +178,12 @@ class Node:
 
         if self.star_effect > 0:
             self.star_effect -= 1
+
+    def checkNoPowerRepeat(self):
+        gameCharacter = self.father.getGameBoard()[self.marioPos]
+        if gameCharacter == self.STAR and self.flowers_acum > 0:
+            return self.STAR
+        elif gameCharacter == self.FLOWER and self.star_effect > 0:
+            return self.FLOWER
+        else:
+            return self.EMPTY
