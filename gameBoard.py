@@ -184,6 +184,54 @@ class GameBoard:
         print("currentNodeCost: ", currentNode.getCost())
         print(currentNode.getDepth())
 
+    def searchByDepth(self):
+        stack = []
+        initialNode = node.Node(self.state, None, None, 0, self.marioPos)
+        stack.append(initialNode)
+
+        while True:
+            if len(stack) == 0:
+                print("Falló, vas a perder IA")
+
+            # currentNode is now initial node and queue becomes empty
+            currentNode = stack.pop()
+            # Checks if the position of Mario equals Yoshi's
+            if currentNode.goalReached(self.yoshiPos):
+                self.findSolution(currentNode)
+                break
+
+             # expand currentNode with the possible directions
+            sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                self.avoidGoingBack(currentNode, stack,
+                                    sonGameBoard, sonMarioPos, self.LEFT)
+
+            sonGameBoard, sonMarioPos = currentNode.move(
+                self.DOWN)
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                self.avoidGoingBack(currentNode, stack,
+                                    sonGameBoard, sonMarioPos, self.DOWN)
+
+            sonGameBoard, sonMarioPos = currentNode.move(
+                self.RIGHT)
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                self.avoidGoingBack(currentNode, stack,
+                                    sonGameBoard, sonMarioPos, self.RIGHT)
+
+            sonGameBoard, sonMarioPos = currentNode.move(
+                self.UP)
+            # Check if new node is different from the current node
+            if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
+                self.avoidGoingBack(currentNode, stack,
+                                    sonGameBoard, sonMarioPos, self.UP)
+
+            print("Mario Pos:", currentNode.getMarioPos())
+            print("currentNodeCost: ", currentNode.getCost())
+            print(currentNode.getDepth())
+
     def selectNodeByCost(self, queue):
 
         nodeSelected = queue[0]
