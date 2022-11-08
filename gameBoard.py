@@ -1,3 +1,4 @@
+import copy
 import numpy as np
 import node
 
@@ -33,6 +34,7 @@ class GameBoard:
         self.flowersPos = []
         self.koopasPos = []
         self.solution = []
+        self.directions = [self.RIGHT, self.LEFT, self.DOWN, self.UP]
 
     # findPeople:
     # Find Mario's and Yoshi's positions in the gameboard
@@ -71,6 +73,23 @@ class GameBoard:
         else:
             queue.append(node.Node(sonGameBoard, currentNode, direction,
                                    currentNode.getDepth()+1, sonMarioPos))
+
+    def avoidLoops(self, currentNode, queue, sonGameBoard, sonMarioPos, direction):
+
+        Loops = False
+        copyNode = copy.deepcopy(currentNode)
+        while currentNode.getDepth()!=0:
+              
+            if (np.array_equal(sonGameBoard, currentNode.getFather().getGameBoard())):
+                Loops = True
+                break           
+            
+            currentNode = currentNode.getFather()
+            
+        if not Loops:
+                    queue.append(node.Node(sonGameBoard, copyNode, direction,
+                                        copyNode.getDepth()+1, sonMarioPos))
+         
 
     # searchByAmplitude
     # Searchs by amplitude :D
@@ -204,32 +223,32 @@ class GameBoard:
                 break
 
              # expand currentNode with the possible directions
-            sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
+            sonGameBoard, sonMarioPos = currentNode.move(self.directions[0])
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                self.avoidGoingBack(currentNode, stack,
-                                    sonGameBoard, sonMarioPos, self.LEFT)
+                self.avoidLoops(currentNode, stack,
+                                    sonGameBoard, sonMarioPos, self.directions[0])
 
             sonGameBoard, sonMarioPos = currentNode.move(
-                self.DOWN)
+                self.directions[1])
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                self.avoidGoingBack(currentNode, stack,
-                                    sonGameBoard, sonMarioPos, self.DOWN)
+                self.avoidLoops(currentNode, stack,
+                                    sonGameBoard, sonMarioPos, self.directions[1])
 
             sonGameBoard, sonMarioPos = currentNode.move(
-                self.RIGHT)
+                self.directions[2])
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                self.avoidGoingBack(currentNode, stack,
-                                    sonGameBoard, sonMarioPos, self.RIGHT)
+                self.avoidLoops(currentNode, stack,
+                                    sonGameBoard, sonMarioPos, self.directions[2])
 
             sonGameBoard, sonMarioPos = currentNode.move(
-                self.UP)
+                self.directions[3])
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                self.avoidGoingBack(currentNode, stack,
-                                    sonGameBoard, sonMarioPos, self.UP)
+                self.avoidLoops(currentNode, stack,
+                                    sonGameBoard, sonMarioPos, self.directions[3])
 
             print("Mario Pos:", currentNode.getMarioPos())
             print("currentNodeCost: ", currentNode.getCost())
