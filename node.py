@@ -60,7 +60,6 @@ class Node:
 
     def getFather(self):
         return self.father
-        return self.koopasPos
 
     def getStar_effect(self):
         return self.star_effect

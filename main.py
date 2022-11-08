@@ -3,7 +3,7 @@ import gameBoard as gb
 import numpy as np
 
 test = np.loadtxt("Prueba1.txt", dtype='i', delimiter=' ')
-search = "costo uniforme"
+search = "profundidad"
 
 gameBoard = gb.GameBoard(test)
 # find Mario and Yoshi

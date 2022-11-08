@@ -195,6 +195,9 @@ class GameBoard:
 
             # currentNode is now initial node and queue becomes empty
             currentNode = stack.pop()
+            if (currentNode.getDepth() > 0):
+                print("Mi costo es", currentNode.getCost(
+                ), "y la posición de mi padre es ", currentNode.getFather().getMarioPos())
             # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
                 self.findSolution(currentNode)
