@@ -40,7 +40,9 @@ class Node:
         else:
 
             self.star_effect = father.getStar_effect()
-            self.flowers_acum = father.getFlower_effect()
+            self.flowers_acum = father.getFlower_acum()
+            # Game character that was in the position that Mario occupies now
+            self.gameCharacter = self.father.getGameBoard()[self.marioPos]
             self.cost = father.getCost() + self.checkCost()
             # should spend before taking any a powerup
             self.spendPowerUps()
@@ -64,7 +66,7 @@ class Node:
     def getStar_effect(self):
         return self.star_effect
 
-    def getFlower_effect(self):
+    def getFlower_acum(self):
         return self.flowers_acum
     # move: number -> matrix, tuple
     # Checks if it is possible to move in a given direction (not going through block or limit)
@@ -137,52 +139,58 @@ class Node:
         return self.marioPos == yoshiPos
 
     def checkPowerUps(self):
-        gameCharacter = self.father.getGameBoard()[self.marioPos]
-        if gameCharacter == self.FLOWER and self.star_effect == 0:
+
+        if self.gameCharacter == self.FLOWER and self.star_effect == 0:
             self.flowers_acum += self.BULLETS
-        if gameCharacter == self.STAR and self.flowers_acum == 0:
+        if self.gameCharacter == self.STAR and self.flowers_acum == 0:
             self.star_effect += self.STAR_POWER
 
     # checkCost: int
     # returns the cost of the movement that has been done
     def checkCost(self):
-        gameCharacter = self.father.getGameBoard()[self.marioPos]
 
         if self.getStar_effect() > 0:
             return self.MOVE_WITH_STAR_COST
         else:
 
-            if gameCharacter == self.EMPTY:
+            if self.gameCharacter == self.EMPTY:
                 return self.MOVE_COST
-            if gameCharacter == self.KOOPA:
+            if self.gameCharacter == self.KOOPA:
                 if self.flowers_acum > 0:
                     return self.MOVE_COST
                 else:
                     return self.MOVE_COST + self.KOOPA
-            if gameCharacter == self.FLOWER:
+            if self.gameCharacter == self.FLOWER:
                 return self.MOVE_COST
-            if gameCharacter == self.STAR:
+            if self.gameCharacter == self.STAR:
                 return self.MOVE_COST
-            if gameCharacter == self.YOSHI:
+            if self.gameCharacter == self.YOSHI:
                 return self.MOVE_COST
 
     # spendPowerUps:
     # This function check the necesary spends by actions
     def spendPowerUps(self):
 
-        gameCharacter = self.father.getGameBoard()[self.marioPos]
         if self.flowers_acum > 0:
-            if gameCharacter == self.KOOPA:
+            if self.gameCharacter == self.KOOPA:
                 self.flowers_acum -= 1
 
         if self.star_effect > 0:
             self.star_effect -= 1
 
+# CHANGE FUNCION NAME
+# checkNoPowerRepeat:
+# This functions checks what element was in the position that Mario occupies now and determines if that element
+# should stay or be removed (replaced by empty)
     def checkNoPowerRepeat(self):
-        gameCharacter = self.father.getGameBoard()[self.marioPos]
-        if gameCharacter == self.STAR and self.flowers_acum > 0:
+
+        flowersFatherHad = self.father.getFlower_acum()
+        starsFatherHad = self.father.getStar_effect()
+        if self.gameCharacter == self.STAR and self.flowers_acum > 0:
             return self.STAR
-        elif gameCharacter == self.FLOWER and self.star_effect > 0:
+        elif self.gameCharacter == self.FLOWER and self.star_effect > 0:
             return self.FLOWER
+        elif self.gameCharacter == self.KOOPA and flowersFatherHad == 0 and starsFatherHad == 0:  # ADDED
+            return self.KOOPA
         else:
             return self.EMPTY
