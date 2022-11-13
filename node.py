@@ -24,7 +24,7 @@ class Node:
     STAR_POWER = 6
     BULLETS = 1
 
-    def __init__(self, gameBoard, father, operator, depth, marioPos):
+    def __init__(self, gameBoard, father, operator, depth, marioPos, yoshiPos):
         self.gameBoard = gameBoard
         self.father = father
         self.operator = operator
@@ -32,6 +32,7 @@ class Node:
         self.ROWS = len(gameBoard)
         self.COLS = len(gameBoard[0])
         self.marioPos = marioPos
+        self.yoshiPos = yoshiPos
 
         if depth == 0:
             self.cost = 0
@@ -194,3 +195,10 @@ class Node:
             return self.KOOPA
         else:
             return self.EMPTY
+
+    # Heuristic
+    # Manhattan distance
+    def getHeuristic(self):
+        distance_x = abs(self.marioPos[0] - self.yoshiPos[0])
+        distance_y = abs(self.marioPos[1] - self.yoshiPos[1])
+        return distance_x + distance_y
