@@ -1,4 +1,4 @@
-import viewer
+import boardViewer
 import gameBoard as gb
 import numpy as np
 
@@ -17,5 +17,5 @@ if search == "profundidad":
     gameBoard.searchByDepth()
 
 solution = gameBoard.getSolution()
-viewer = viewer.Viewer(solution)
-viewer.drawState()
+boardViewer = boardViewer.Viewer(solution)
+boardViewer.drawState()
