@@ -286,8 +286,10 @@ class GameBoard:
         nodeSelected = queue[0]
         nodeIndex = 0
         # simple movement
+        print("length", len(queue))
         for index, node in enumerate(queue):
-            if nodeSelected.getHeuristic() + nodeSelected.getCost() > node.getHeuristic() + node.getCost():
+            print("OBVIO")
+            if nodeSelected.getBest() > node.getBest():
                 nodeSelected = node
                 nodeIndex = index
 
@@ -306,6 +308,8 @@ class GameBoard:
 
             # currentNode is now initial node and queue becomes empty
             currentNode = queue.pop(self.selectNodeByHeuristic(queue))
+            print("MarioPos:", currentNode.getMarioPos(), "g:",
+                  currentNode.getCost(), "h:", currentNode.getHeuristic())
             # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
                 self.findSolution(currentNode)
@@ -366,32 +370,31 @@ class GameBoard:
                 break
 
             # expand currentNode with the possible directions
-            print("Algoritmo A*")
             sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.UP)
+                queue.append(node.Node(sonGameBoard, currentNode, self.LEFT,
+                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
 
             sonGameBoard, sonMarioPos = currentNode.move(
                 self.DOWN)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.UP)
+                queue.append(node.Node(sonGameBoard, currentNode, self.DOWN,
+                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
             sonGameBoard, sonMarioPos = currentNode.move(
                 self.RIGHT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.UP)
+                queue.append(node.Node(sonGameBoard, currentNode, self.RIGHT,
+                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
 
             sonGameBoard, sonMarioPos = currentNode.move(
                 self.UP)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                self.avoidGoingBack(currentNode, queue,
-                                    sonGameBoard, sonMarioPos, self.UP)
+                queue.append(node.Node(sonGameBoard, currentNode, self.UP,
+                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
            # print(list(map(lambda x: x.getMarioPos(), queue)))
             #print("length of queue", len(queue))
             # for element in queue:
@@ -402,16 +405,20 @@ class GameBoard:
 
     def findSolution(self, currentNode):
         solutions = []
-        costos = []
+        costs = []
+        heuristics = []
         while currentNode != None:
             currentGameBoard = currentNode.getGameBoard()
             solutions.append(currentGameBoard)
-            costos.append(currentNode.getCost())
+            costs.append(currentNode.getCost())
+            heuristics.append(currentNode.getHeuristic())
             currentNode = currentNode.getFather()
         solutionsOrdered = solutions[::-1]
-        costsF = costos[::-1]
+        costsF = costs[::-1]
+        heuristicsF = heuristics[::-1]
         self.solution = solutionsOrdered
-        print(costsF)
+        print("Costos", costsF)
+        print("Heuristicas", heuristicsF)
         # print(solutionsOrdered)
 
     def getSolution(self):
