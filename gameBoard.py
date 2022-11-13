@@ -1,5 +1,7 @@
 import copy
+
 import numpy as np
+
 import node
 
 
@@ -345,6 +347,7 @@ class GameBoard:
         print(currentNode.getDepth())
 
     def AStarSearch(self):
+
         queue = []
         initialNode = node.Node(self.state, None, None,
                                 0, self.marioPos, self.yoshiPos)
@@ -363,31 +366,32 @@ class GameBoard:
                 break
 
             # expand currentNode with the possible directions
+            print("Algoritmo A*")
             sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                queue.append(node.Node(sonGameBoard, currentNode, self.LEFT,
-                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.UP)
 
             sonGameBoard, sonMarioPos = currentNode.move(
                 self.DOWN)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                queue.append(node.Node(sonGameBoard, currentNode, self.DOWN,
-                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.UP)
             sonGameBoard, sonMarioPos = currentNode.move(
                 self.RIGHT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                queue.append(node.Node(sonGameBoard, currentNode, self.RIGHT,
-                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.UP)
 
             sonGameBoard, sonMarioPos = currentNode.move(
                 self.UP)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                queue.append(node.Node(sonGameBoard, currentNode, self.UP,
-                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.UP)
            # print(list(map(lambda x: x.getMarioPos(), queue)))
             #print("length of queue", len(queue))
             # for element in queue:
