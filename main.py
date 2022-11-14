@@ -1,26 +1,18 @@
 import boardViewer
-import gameBoard as gb
+import searchAlgorithm as SA
 import numpy as np
 
 test = np.loadtxt("Prueba1.txt", dtype='i', delimiter=' ')
+# amplitud, costo uniforme, profundidad, avara, A*
 search = "A*"
 
-gameBoard = gb.GameBoard(test)
+searchAlgorithm = SA.SearchAlgorithm(test)
 # find Mario and Yoshi
-gameBoard.findPeople()
+searchAlgorithm.findPeople()
 
-if search == "amplitud":
-    gameBoard.searchByAmplitude()
-if search == "costo uniforme":
-    gameBoard.searchByCost()
-if search == "profundidad":
-    gameBoard.searchByDepth()
-if search == "avara":
-    gameBoard.greedySearch()
-if search == "A*":
-    gameBoard.AStarSearch()
+searchAlgorithm.search(search)
 
 
-solution = gameBoard.getSolution()
+solution = searchAlgorithm.getSolution()
 boardViewer = boardViewer.Viewer(solution)
 boardViewer.drawState()
