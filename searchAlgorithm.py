@@ -36,6 +36,8 @@ class SearchAlgorithm:
         self.flowersPos = []
         self.koopasPos = []
         self.solution = []
+        self.generatedNodes = 1
+        self.expandedNodes = 0
         # in depth algorithm, it starts from the last direction: the last is the first it checks
         self.directions = [self.RIGHT, self.LEFT, self.DOWN, self.UP]
 
@@ -66,14 +68,17 @@ class SearchAlgorithm:
     # Checks if the son is different from the grandparent, so that it avoids going back
 
     def avoidGoingBack(self, currentNode, queue, sonGameBoard, sonMarioPos, direction):
+
         # If the current node is not the initial, it has grandparents
         if (currentNode.getDepth() > 0):
             # Check if the new node is different from the grandparent, TO AVOID GOING BACK
             if not (np.array_equal(sonGameBoard, currentNode.getFather().getGameBoard())):
+                self.generatedNodes += 1
                 queue.append(node.Node(sonGameBoard, currentNode, direction,
                                        currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
         # If the node is the initial node, the new node is added without checking if it can go back
         else:
+            self.generatedNodes += 1
             queue.append(node.Node(sonGameBoard, currentNode, direction,
                                    currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
 
@@ -90,6 +95,7 @@ class SearchAlgorithm:
             currentNode = currentNode.getFather()
 
         if not Loops:
+            self.generatedNodes += 1
             queue.append(node.Node(sonGameBoard, copyNode, direction,
                                    copyNode.getDepth()+1, sonMarioPos, self.yoshiPos))
 
@@ -134,8 +140,14 @@ class SearchAlgorithm:
             #     ), "y la posición de mi padre es ", currentNode.getFather().getMarioPos())
 
             # Checks if the position of Mario equals Yoshi's
+            self.expandedNodes += 1
             if currentNode.goalReached(self.yoshiPos):
                 self.findSolution(currentNode)
+                print("Mario Pos:", currentNode.getMarioPos())
+                print("currentNodeCost: ", currentNode.getCost())
+                print("profundidad", currentNode.getDepth())
+                print("Nodos generados", self.generatedNodes)
+                print("Nodos expandidos", self.expandedNodes)
                 break
 
             if algorithm == "profundidad":
@@ -144,17 +156,14 @@ class SearchAlgorithm:
                 avoidVar = "goingBack"
 
             # For that iterates over the four possible directions
+
             for direction in self.directions:
                 # expand currentNode with the possible directions
                 sonGameBoard, sonMarioPos = currentNode.move(direction)
-                # Check if new node is different from the current node
+                # Check if new node is different from the current node, this means the movement is NOT POSSIBLE
                 if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
                     self.avoid(avoidVar)(currentNode, stack,
                                          sonGameBoard, sonMarioPos, direction)
-
-            print("Mario Pos:", currentNode.getMarioPos())
-            print("currentNodeCost: ", currentNode.getCost())
-            print("profundidad", currentNode.getDepth())
 
     def selectNodeByCost(self, queue):
 
