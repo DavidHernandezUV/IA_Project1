@@ -145,7 +145,7 @@ class GameBoard:
                 self.avoidGoingBack(currentNode, queue,
                                     sonGameBoard, sonMarioPos, self.UP)
            # print(list(map(lambda x: x.getMarioPos(), queue)))
-            #print("length of queue", len(queue))
+            # print("length of queue", len(queue))
             # for element in queue:
             #  print(element.getGameBoard())
         print("Mario Pos:", currentNode.getMarioPos())
@@ -199,7 +199,7 @@ class GameBoard:
                 self.avoidGoingBack(currentNode, queue,
                                     sonGameBoard, sonMarioPos, self.UP)
            # print(list(map(lambda x: x.getMarioPos(), queue)))
-            #print("length of queue", len(queue))
+            # print("length of queue", len(queue))
             # for element in queue:
             #  print(element.getGameBoard())
         print("Mario Pos:", currentNode.getMarioPos())
@@ -256,7 +256,7 @@ class GameBoard:
 
             print("Mario Pos:", currentNode.getMarioPos())
             print("currentNodeCost: ", currentNode.getCost())
-            print(currentNode.getDepth())
+            print("profundidad", currentNode.getDepth())
 
     def selectNodeByCost(self, queue):
 
@@ -276,6 +276,7 @@ class GameBoard:
         nodeIndex = 0
         # simple movement
         for index, node in enumerate(queue):
+
             if nodeSelected.getHeuristic() > node.getHeuristic():
                 nodeSelected = node
                 nodeIndex = index
@@ -286,9 +287,8 @@ class GameBoard:
         nodeSelected = queue[0]
         nodeIndex = 0
         # simple movement
-        print("length", len(queue))
         for index, node in enumerate(queue):
-            print("OBVIO")
+           # print(nodeSelected.getMarioPos())
             if nodeSelected.getBest() > node.getBest():
                 nodeSelected = node
                 nodeIndex = index
@@ -307,9 +307,9 @@ class GameBoard:
                 print("Falló, vas a perder IA")
 
             # currentNode is now initial node and queue becomes empty
+
             currentNode = queue.pop(self.selectNodeByHeuristic(queue))
-            print("MarioPos:", currentNode.getMarioPos(), "g:",
-                  currentNode.getCost(), "h:", currentNode.getHeuristic())
+
             # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
                 self.findSolution(currentNode)
@@ -343,7 +343,7 @@ class GameBoard:
                 self.avoidLoops(currentNode, queue,
                                 sonGameBoard, sonMarioPos, self.UP)
            # print(list(map(lambda x: x.getMarioPos(), queue)))
-            #print("length of queue", len(queue))
+            # print("length of queue", len(queue))
             # for element in queue:
             #  print(element.getGameBoard())
         print("Mario Pos:", currentNode.getMarioPos())
@@ -361,9 +361,9 @@ class GameBoard:
 
             if len(queue) == 0:
                 print("Falló, vas a perder IA")
-
             # currentNode is now initial node and queue becomes empty
             currentNode = queue.pop(self.selectNodeByAStar(queue))
+            # print("MarioPos:", currentNode.getMarioPos(), "g:", currentNode.getCost(), "h:", currentNode.getHeuristic(), "g+h:", currentNode.getBest())
             # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
                 self.findSolution(currentNode)
@@ -373,35 +373,35 @@ class GameBoard:
             sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                queue.append(node.Node(sonGameBoard, currentNode, self.LEFT,
-                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.LEFT)
 
             sonGameBoard, sonMarioPos = currentNode.move(
                 self.DOWN)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                queue.append(node.Node(sonGameBoard, currentNode, self.DOWN,
-                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.DOWN)
             sonGameBoard, sonMarioPos = currentNode.move(
                 self.RIGHT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                queue.append(node.Node(sonGameBoard, currentNode, self.RIGHT,
-                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.RIGHT)
 
             sonGameBoard, sonMarioPos = currentNode.move(
                 self.UP)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                queue.append(node.Node(sonGameBoard, currentNode, self.UP,
-                                       currentNode.getDepth()+1, sonMarioPos, self.yoshiPos))
+                self.avoidGoingBack(currentNode, queue,
+                                    sonGameBoard, sonMarioPos, self.UP)
            # print(list(map(lambda x: x.getMarioPos(), queue)))
-            #print("length of queue", len(queue))
+            # print("length of queue", len(queue))
             # for element in queue:
             #  print(element.getGameBoard())
         print("Mario Pos:", currentNode.getMarioPos())
         print("currentNodeCost: ", currentNode.getCost())
-        print(currentNode.getDepth())
+        print("profundidad", currentNode.getDepth())
 
     def findSolution(self, currentNode):
         solutions = []
