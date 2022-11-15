@@ -77,6 +77,7 @@ class Node:
         # create copied son
         sonGameBoard = np.array(self.gameBoard, copy=True)
         sonMarioPosition = self.marioPos
+
         # Checks if there is no limit or block
         # MOVE TO LEFT
         if direction == self.LEFT and (self.marioPos[1]-1 >= 0) and (sonGameBoard[self.marioPos[0]][self.marioPos[1]-1] != self.BLOCK):
@@ -201,4 +202,8 @@ class Node:
     def getHeuristic(self):
         distance_x = abs(self.marioPos[0] - self.yoshiPos[0])
         distance_y = abs(self.marioPos[1] - self.yoshiPos[1])
-        return distance_x + distance_y
+        distance = (distance_x + distance_y)/2
+        return distance
+
+    def getBest(self):
+        return self.getHeuristic() + self.getCost()
