@@ -366,7 +366,7 @@ class GameBoard:
                 break
 
             # expand currentNode with the possible directions
-            print("Algoritmo A*")
+
             sonGameBoard, sonMarioPos = currentNode.move(self.LEFT)
             # Check if new node is different from the current node
             if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):

@@ -30,5 +30,11 @@ class Button():
 
         # draw button on screen
         surface.blit(self.image, ((screen_width-self.width)/2, self.rect.y))
+        self.rect.topleft = ((screen_width-self.width)/2, self.rect.y)
 
         return action
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if self.rect.collidepoint(event.pos):
+                self.Clicked = True
