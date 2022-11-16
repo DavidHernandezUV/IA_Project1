@@ -6,6 +6,7 @@ import node
 
 import time
 
+
 class SearchAlgorithm:
     # CONSTANTS
     LEFT = 0
@@ -41,7 +42,7 @@ class SearchAlgorithm:
         self.expandedNodes = 0
         self.depth = 0
         self.cost = 0
-        self.algorithmTime = 0
+        self.algorithmTime = ""
         # in depth algorithm, it starts from the last direction: the last is the first it checks
         self.directions = [self.RIGHT, self.LEFT, self.DOWN, self.UP]
 
@@ -128,7 +129,7 @@ class SearchAlgorithm:
 
     def search(self, algorithm):
         startTime = time.time()
-        list = [] #it can be a queue or a stack
+        list = []  # it can be a queue or a stack
         initialNode = node.Node(self.state, None, None,
                                 0, self.marioPos, self.yoshiPos)
         list.append(initialNode)
@@ -140,13 +141,13 @@ class SearchAlgorithm:
             # currentNode is now initial node and queue becomes empty
             currentNode = self.selectNodeBy(algorithm, list)
 
-            #the node is about to be expanded            
+            # the node is about to be expanded
             self.expandedNodes += 1
             # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
                 endTime = time.time()
-                self.algorithmTime = endTime - startTime
-                print("Tiempo de ejecucioń:", self.algorithmTime,"segundos")
+                self.algorithmTime = str(endTime - startTime)
+                print("Tiempo de ejecución:", self.algorithmTime, "segundos")
                 self.findSolution(currentNode)
                 print("Mario Pos:", currentNode.getMarioPos())
                 self.cost = currentNode.getCost()
@@ -238,6 +239,9 @@ class SearchAlgorithm:
 
     def getExpandedNodes(self):
         return self.expandedNodes
-    
+
     def getCost(self):
         return self.cost
+
+    def getAlgorithmTime(self):
+        return self.algorithmTime

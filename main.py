@@ -1,7 +1,7 @@
 import pygame
 import button
 from pygame import mixer
-import Controller as control
+import controller as control
 import sys
 import math
 import numpy as np
@@ -43,7 +43,7 @@ bullets = 0
 
 # define fonts
 font = pygame.font.SysFont("comicsansms", 40)
-font2 = pygame.font.SysFont("comicsansms", 20, True)
+font2 = pygame.font.SysFont("comicsansms", 15, True)
 
 # define mixer to play music
 mixer.init()
@@ -230,6 +230,8 @@ while run:
                 report_text(controller.getExpandedNodes(), 305)
                 report_text("Costo:", 340)
                 report_text(controller.getCost(), 365)
+                report_text("Tiempo en S:", 400)
+                report_text(controller.getAlgorithmTime()+"s", 425)
                 # draw Solution
 
                 startGame(solution)
