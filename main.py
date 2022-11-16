@@ -1,7 +1,7 @@
 import pygame
 import button
 from pygame import mixer
-import controller as control
+import Controller as control
 import sys
 import math
 import numpy as np
@@ -62,7 +62,7 @@ smallJump_sound = pygame.mixer.Sound('sounds/small_jump.ogg')
 smallJump_sound.set_volume(0.4)
 hoo_sound = pygame.mixer.Sound('sounds/hoo.wav')
 hoo_sound.set_volume(0.4)
-hooHoo_sound = pygame.mixer.Sound('sounds/hooHoo.wav')
+hooHoo_sound = pygame.mixer.Sound('sounds/hoohoo.wav')
 hooHoo_sound.set_volume(0.4)
 waha_sound = pygame.mixer.Sound('sounds/waha.wav')
 waha_sound.set_volume(0.4)
@@ -84,7 +84,7 @@ thwomp_sound = pygame.mixer.Sound('sounds/thwomp.wav')
 thwomp_sound.set_volume(1)
 fireball_sound = pygame.mixer.Sound('sounds/fireball.ogg')
 fireball_sound.set_volume(1)
-powerUp_sound = pygame.mixer.Sound('sounds/powerUp.ogg')
+powerUp_sound = pygame.mixer.Sound('sounds/powerup.ogg')
 powerUp_sound.set_volume(1)
 
 

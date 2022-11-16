@@ -4,6 +4,7 @@ import numpy as np
 
 import node
 
+import time
 
 class SearchAlgorithm:
     # CONSTANTS
@@ -40,6 +41,7 @@ class SearchAlgorithm:
         self.expandedNodes = 0
         self.depth = 0
         self.cost = 0
+        self.algorithmTime = 0
         # in depth algorithm, it starts from the last direction: the last is the first it checks
         self.directions = [self.RIGHT, self.LEFT, self.DOWN, self.UP]
 
@@ -125,25 +127,26 @@ class SearchAlgorithm:
             return list.pop(self.selectNodeByAStar(list))
 
     def search(self, algorithm):
-        stack = []
+        startTime = time.time()
+        list = [] #it can be a queue or a stack
         initialNode = node.Node(self.state, None, None,
                                 0, self.marioPos, self.yoshiPos)
-        stack.append(initialNode)
+        list.append(initialNode)
 
         while True:
-            if len(stack) == 0:
+            if len(list) == 0:
                 print("Falló, vas a perder IA")
 
             # currentNode is now initial node and queue becomes empty
-            currentNode = self.selectNodeBy(algorithm, stack)
+            currentNode = self.selectNodeBy(algorithm, list)
 
-            # if (currentNode.getDepth() > 0):
-            #     print("Mi costo es", currentNode.getCost(
-            #     ), "y la posición de mi padre es ", currentNode.getFather().getMarioPos())
-
-            # Checks if the position of Mario equals Yoshi's
+            #the node is about to be expanded            
             self.expandedNodes += 1
+            # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
+                endTime = time.time()
+                self.algorithmTime = endTime - startTime
+                print("Tiempo de ejecucioń:", self.algorithmTime,"segundos")
                 self.findSolution(currentNode)
                 print("Mario Pos:", currentNode.getMarioPos())
                 self.cost = currentNode.getCost()
@@ -166,7 +169,7 @@ class SearchAlgorithm:
                 sonGameBoard, sonMarioPos = currentNode.move(direction)
                 # Check if new node is different from the current node, this means the movement is NOT POSSIBLE
                 if not (np.array_equal(sonGameBoard, currentNode.getGameBoard())):
-                    self.avoid(avoidVar)(currentNode, stack,
+                    self.avoid(avoidVar)(currentNode, list,
                                          sonGameBoard, sonMarioPos, direction)
 
     def selectNodeByCost(self, queue):
@@ -217,11 +220,11 @@ class SearchAlgorithm:
             heuristics.append(currentNode.getHeuristic())
             currentNode = currentNode.getFather()
         solutionsOrdered = solutions[::-1]
-        costsF = costs[::-1]
-        heuristicsF = heuristics[::-1]
+        #costsF = costs[::-1]
+        #heuristicsF = heuristics[::-1]
         self.solution = solutionsOrdered
-        print("Costos", costsF)
-        print("Heuristicas", heuristicsF)
+        #print("Costos", costsF)
+        #print("Heuristicas", heuristicsF)
         # print(solutionsOrdered)
 
     def getSolution(self):
