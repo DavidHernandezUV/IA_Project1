@@ -38,6 +38,8 @@ class SearchAlgorithm:
         self.solution = []
         self.generatedNodes = 1
         self.expandedNodes = 0
+        self.depth = 0
+        self.cost = 0
         # in depth algorithm, it starts from the last direction: the last is the first it checks
         self.directions = [self.RIGHT, self.LEFT, self.DOWN, self.UP]
 
@@ -144,8 +146,10 @@ class SearchAlgorithm:
             if currentNode.goalReached(self.yoshiPos):
                 self.findSolution(currentNode)
                 print("Mario Pos:", currentNode.getMarioPos())
+                self.cost = currentNode.getCost()
                 print("currentNodeCost: ", currentNode.getCost())
-                print("profundidad", currentNode.getDepth())
+                self.depth = currentNode.getDepth()
+                print("profundidad", self.depth)
                 print("Nodos generados", self.generatedNodes)
                 print("Nodos expandidos", self.expandedNodes)
                 break
@@ -222,3 +226,15 @@ class SearchAlgorithm:
 
     def getSolution(self):
         return self.solution
+
+    def getDepth(self):
+        return self.depth
+
+    def getGeneratedNodes(self):
+        return self.generatedNodes
+
+    def getExpandedNodes(self):
+        return self.expandedNodes
+    
+    def getCost(self):
+        return self.cost

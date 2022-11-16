@@ -12,14 +12,34 @@ class Controller():
         self.searchAlgorithm = SA.SearchAlgorithm(self.test)
         # find Mario and Yoshi
         self.searchAlgorithm.findPeople()
+        self.depth = 0
+        self.generatedNodes = 0
+        self.expandedNodes = 0
+        self.cost = 0
 
     def search(self):
         # find solution using algorithm selected
         self.searchAlgorithm.search(self.searchBy)
         # return the solution found
         self.solution = self.searchAlgorithm.getSolution()
+        self.depth = self.searchAlgorithm.getDepth()
+        self.generatedNodes = self.searchAlgorithm.getGeneratedNodes()
+        self.expandedNodes = self.searchAlgorithm.getExpandedNodes()
+        self.cost = self.searchAlgorithm.getCost()
 
     def getSolution(self):
         return self.solution
         #boardViewer = boardViewer.Viewer(solution)
         # boardViewer.drawState()
+
+    def getDepth(self):
+        return self.depth
+
+    def getGeneratedNodes(self):
+        return self.generatedNodes
+
+    def getExpandedNodes(self):
+        return self.expandedNodes
+
+    def getCost(self):
+        return self.cost

@@ -1,7 +1,7 @@
 import pygame
 import button
 from pygame import mixer
-import Controller as control
+import controller as control
 import sys
 import math
 import numpy as np
@@ -37,15 +37,23 @@ game_paused = False
 menu_state = "main"
 algorithm = ""
 game_ended = False
+lastState = []
+star_effect = 0
+bullets = 0
 
 # define fonts
 font = pygame.font.SysFont("comicsansms", 40)
+font2 = pygame.font.SysFont("comicsansms", 20, True)
 
 # define mixer to play music
 mixer.init()
 # music
 main_music = pygame.mixer.Sound('music/main_theme.ogg')
 main_music.set_volume(0.7)
+stage_clear_music = pygame.mixer.Sound('music/stage_clear.wav')
+stage_clear_music.set_volume(0.7)
+invincible_music = pygame.mixer.Sound('music/invincible.ogg')
+invincible_music.set_volume(0.7)
 # sounds
 select_sound = pygame.mixer.Sound('sounds/bump.ogg')
 bigJump_sound = pygame.mixer.Sound('sounds/big_jump.ogg')
@@ -60,9 +68,27 @@ waha_sound = pygame.mixer.Sound('sounds/waha.wav')
 waha_sound.set_volume(0.4)
 yippee_sound = pygame.mixer.Sound('sounds/yippee.wav')
 yippee_sound.set_volume(0.4)
-
+yippee_sound = pygame.mixer.Sound('sounds/yippee.wav')
+yippee_sound.set_volume(0.4)
 jumps = [bigJump_sound, smallJump_sound, hoo_sound,
          hooHoo_sound, waha_sound, yippee_sound]
+
+# Events
+oof_sound = pygame.mixer.Sound('sounds/oof.wav')
+oof_sound.set_volume(1)
+yoshi_sound = pygame.mixer.Sound('sounds/yoshi.wav')
+yoshi_sound.set_volume(1)
+mario_hurt_sound = pygame.mixer.Sound('sounds/mario_hurt.wav')
+mario_hurt_sound.set_volume(0.5)
+thwomp_sound = pygame.mixer.Sound('sounds/thwomp.wav')
+thwomp_sound.set_volume(1)
+fireball_sound = pygame.mixer.Sound('sounds/fireball.ogg')
+fireball_sound.set_volume(1)
+powerUp_sound = pygame.mixer.Sound('sounds/powerUp.ogg')
+powerUp_sound.set_volume(1)
+
+
+hurts = [mario_hurt_sound, oof_sound]
 # background music theme
 pygame.mixer.Sound.play(main_music)
 
@@ -111,6 +137,12 @@ def draw_text(text, font, text_col, x, y):
     else:
         img = font.render(text, True, text_col)
     screen.blit(img, (400-img.get_width()/2, y))
+
+
+def report_text(text, y):
+
+    txt = font2.render(str(text), False, "BLACK")  # "text", antialias, color
+    screen.blit(txt, (700-txt.get_width()/2, y))
 
 
 # game loop
@@ -190,6 +222,14 @@ while run:
                 controller = control.Controller(algorithm)
                 controller.search()
                 solution = controller.getSolution()
+                report_text("Profundidad:", 160)
+                report_text(controller.getDepth(), 185)
+                report_text("Nodos Generados:", 220)
+                report_text(controller.getGeneratedNodes(), 245)
+                report_text("Nodos Expandidos:", 280)
+                report_text(controller.getExpandedNodes(), 305)
+                report_text("Costo:", 340)
+                report_text(controller.getCost(), 365)
                 # draw Solution
 
                 startGame(solution)
@@ -201,6 +241,9 @@ while run:
             if back_button.draw(screen, 1400):
                 game_ended = False
                 menu_state = "main"
+                main_music.set_volume(0.7)
+                pygame.mixer.Sound.stop(invincible_music)
+                pygame.mixer.Sound.stop(stage_clear_music)
 
     else:
         draw_text("Presione espacio para iniciar", font, TEXT_COL, 160, 250)
@@ -214,15 +257,17 @@ while run:
             run = False
 
     def startGame(solution):
-
+        stateAccum = 0
         for state in solution:
             time.sleep(0.8)
+            # play random jump sound
             pygame.mixer.Sound.play(random.choice(jumps))
             # clean board
             screen.fill(WHITE, rect=(
                 0, 0, GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT))
             # re-draw board
-            figures(screen, state)
+            figures(screen, state, stateAccum)
+            stateAccum += 1
             # re-draw grid
             drawGrid(screen)
 
@@ -240,16 +285,60 @@ while run:
                 rect = pygame.Rect(x, y, BLOCK_SIZE, BLOCK_SIZE)
                 pygame.draw.rect(screen, BLACK, rect, 1)
 
-    def figures(screen, matriz):
+    def figures(screen, state, accum):
+        global lastState
+        global star_effect
+        global bullets
 
-        aux = np.nditer(matriz, flags=['multi_index'])
+        if star_effect == 0:
+            main_music.set_volume(0.7)
+            pygame.mixer.Sound.stop(invincible_music)
+
+        aux = np.nditer(state, flags=['multi_index'])
         for element in aux:
 
             if element != 0:
                 fig = pygame.image.load("img/%d.jpg" % int(element)).convert()
+                if element == 2:
+                    if bullets > 0:
+                        fig = pygame.image.load(
+                            "img/%dfire.jpg" % int(element)).convert()
+                    if star_effect > 0:
+                        fig = pygame.image.load(
+                            "img/%dstar.jpg" % int(element)).convert()
                 # Using blit to copy content from one surface to other
                 screen.blit(
                     fig, (aux.multi_index[1]*BLOCK_SIZE+5, aux.multi_index[0]*BLOCK_SIZE+5))
+
+            # check sounds and music
+            if element == 2 and accum > 0:
+                if lastState[aux.multi_index[0]][aux.multi_index[1]] == 5:
+                    # sound with star effect
+                    if star_effect > 0:
+                        pygame.mixer.Sound.play(thwomp_sound)
+                    # sound with flower bullets
+                    if bullets > 0:
+                        bullets -= 1
+                        pygame.mixer.Sound.play(fireball_sound)
+                    # sound without star effect
+                    else:
+                        pygame.mixer.Sound.play(random.choice(hurts))
+                if lastState[aux.multi_index[0]][aux.multi_index[1]] == 6:
+                    pygame.mixer.Sound.play(yoshi_sound)
+                    main_music.set_volume(0)
+                    pygame.mixer.Sound.play(stage_clear_music)
+                if lastState[aux.multi_index[0]][aux.multi_index[1]] == 3 and bullets == 0:
+                    pygame.mixer.Sound.stop(invincible_music)
+                    pygame.mixer.Sound.play(invincible_music)
+                    main_music.set_volume(0)
+                    star_effect += 7
+                if lastState[aux.multi_index[0]][aux.multi_index[1]] == 4 and star_effect == 0:
+                    pygame.mixer.Sound.play(powerUp_sound)
+                    bullets += 1
+
+        if star_effect > 0:
+            star_effect -= 1
+        lastState = state
 
     pygame.display.update()
 
