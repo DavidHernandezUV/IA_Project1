@@ -147,7 +147,10 @@ class Node:
         if self.gameCharacter == self.FLOWER and self.star_effect == 0:
             self.flowers_acum += self.BULLETS
         if self.gameCharacter == self.STAR and self.flowers_acum == 0:
-            self.star_effect += self.STAR_POWER + 1
+            if self.star_effect > 0:
+                self.star_effect += self.STAR_POWER
+            else:
+                self.star_effect += self.STAR_POWER + 1
 
     # checkCost: int
     # returns the cost of the movement that has been done

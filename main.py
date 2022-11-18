@@ -64,7 +64,8 @@ star_effect = 0
 bullets = 0
 
 # define fonts
-font = pygame.font.SysFont("comicsansms", 40)
+font = pygame.font.SysFont("comicsansms", 30)
+
 font2 = pygame.font.SysFont("comicsansms", 15, True)
 
 # define mixer to play music
@@ -162,9 +163,51 @@ def draw_text(text, font, text_col, x, y):
 
 
 def report_text(text, y):
+    txt1 = render(text, font2)
+    screen.blit(txt1, (700-txt1.get_width()/2, y))
 
-    txt = font2.render(str(text), False, "BLACK")  # "text", antialias, color
-    screen.blit(txt, (700-txt.get_width()/2, y))
+
+_circle_cache = {}
+
+
+def _circlepoints(r):
+    r = int(round(r))
+    if r in _circle_cache:
+        return _circle_cache[r]
+    x, y, e = r, 0, 1 - r
+    _circle_cache[r] = points = []
+    while x >= y:
+        points.append((x, y))
+        y += 1
+        if e < 0:
+            e += 2 * y - 1
+        else:
+            x -= 1
+            e += 2 * (y - x) - 1
+    points += [(y, x) for x, y in points if x > y]
+    points += [(-x, y) for x, y in points if x]
+    points += [(x, -y) for x, y in points if y]
+    points.sort()
+    return points
+
+
+def render(text, font, gfcolor=pygame.Color('black'), ocolor=(255, 255, 255), opx=2):
+    textsurface = font.render(text, True, gfcolor).convert_alpha()
+    w = textsurface.get_width() + 2 * opx
+    h = font.get_height()
+
+    osurf = pygame.Surface((w, h + 2 * opx)).convert_alpha()
+    osurf.fill((0, 0, 0, 0))
+
+    surf = osurf.copy()
+
+    osurf.blit(font.render(text, True, ocolor).convert_alpha(), (0, 0))
+
+    for dx, dy in _circlepoints(opx):
+        surf.blit(osurf, (dx + opx, dy + opx))
+
+    surf.blit(textsurface, (opx, opx))
+    return surf
 
 
 # game loop
@@ -180,13 +223,17 @@ while run:
     if game_paused == True:
         # check menu state
         if menu_state == "main":
-            draw_text("Search BY " + algorithm, font, TEXT_COL, 400, 70)
+            searchBy = render(
+                "Debe seleccionar un algoritmo " + algorithm, font)
+            screen.blit(searchBy, ((MENU_SCREEN_WIDTH -
+                        searchBy.get_width())/2, 70))
             # draw pause screen buttons
             if start_button.draw(screen, MENU_SCREEN_WIDTH):
                 pygame.mixer.Sound.play(select_sound)
                 if algorithm == "":
-                    draw_text("Debe seleccionar un algoritmo",
-                              font, TEXT_COL, 400, 70)
+                    screen.blit(searchBy, ((MENU_SCREEN_WIDTH -
+                                searchBy.get_width())/2, 70))
+
                 else:
                     menu_state = "in_game"
 
@@ -245,13 +292,13 @@ while run:
                 controller.search()
                 solution = controller.getSolution()
                 report_text("Profundidad:", 160)
-                report_text(controller.getDepth(), 185)
+                report_text(str(controller.getDepth()), 185)
                 report_text("Nodos Generados:", 220)
-                report_text(controller.getGeneratedNodes(), 245)
+                report_text(str(controller.getGeneratedNodes()), 245)
                 report_text("Nodos Expandidos:", 280)
-                report_text(controller.getExpandedNodes(), 305)
+                report_text(str(controller.getExpandedNodes()), 305)
                 report_text("Costo:", 340)
-                report_text(controller.getCost(), 365)
+                report_text(str(controller.getCost()), 365)
                 report_text("Tiempo en S:", 400)
                 report_text(
                     str(round(controller.getAlgorithmTime(), 5))+"s", 425)
@@ -357,7 +404,7 @@ while run:
                     pygame.mixer.Sound.stop(invincible_music)
                     pygame.mixer.Sound.play(invincible_music)
                     main_music.set_volume(0)
-                    star_effect += STAR_POWER+1
+                    star_effect += STAR_POWER
                 if lastState[aux.multi_index[0]][aux.multi_index[1]] == FLOWER and star_effect == 0:
                     pygame.mixer.Sound.play(powerUp_sound)
                     bullets += BULLETS
