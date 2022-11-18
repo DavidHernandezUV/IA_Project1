@@ -10,6 +10,28 @@ import random
 
 pygame.init()
 
+# CONSTANTS
+LEFT = 0
+DOWN = 1
+RIGHT = 2
+UP = 3
+EMPTY = 0
+BLOCK = 1
+MARIO = 2
+STAR = 3
+FLOWER = 4
+KOOPA = 5
+YOSHI = 6
+
+# Costs
+KOOPA_COST = 5
+MOVE_COST = 1
+MOVE_WITH_STAR_COST = 0.5
+
+# Powerups
+STAR_POWER = 6
+BULLETS = 1
+
 # create game window
 # main menu size
 MENU_SCREEN_WIDTH = 800
@@ -49,11 +71,11 @@ font2 = pygame.font.SysFont("comicsansms", 15, True)
 mixer.init()
 # music
 main_music = pygame.mixer.Sound('music/main_theme.ogg')
-main_music.set_volume(0)
+main_music.set_volume(0.7)
 stage_clear_music = pygame.mixer.Sound('music/stage_clear.wav')
-stage_clear_music.set_volume(0)
+stage_clear_music.set_volume(0.5)
 invincible_music = pygame.mixer.Sound('music/invincible.ogg')
-invincible_music.set_volume(0)
+invincible_music.set_volume(0.5)
 # sounds
 select_sound = pygame.mixer.Sound('sounds/bump.ogg')
 bigJump_sound = pygame.mixer.Sound('sounds/big_jump.ogg')
@@ -118,11 +140,11 @@ algorithm_button = button.Button(MENU_SCREEN_WIDTH/2, 250, algorithm_img, 1)
 quit_button = button.Button(MENU_SCREEN_WIDTH/2, 375, quit_img, 1)
 informed_button = button.Button(MENU_SCREEN_WIDTH/2, 75, informed_img, 1)
 uninformed_button = button.Button(MENU_SCREEN_WIDTH/2, 200, uninformed_img, 1)
-amplitude_button = button.Button(MENU_SCREEN_WIDTH/2, 75, amplitude_img, 1)
-cost_button = button.Button(MENU_SCREEN_WIDTH/2, 200, cost_img, 1)
-depth_button = button.Button(MENU_SCREEN_WIDTH/2, 325, depth_img, 1)
-greedy_button = button.Button(MENU_SCREEN_WIDTH/2, 75, greedy_img, 1)
-aStar_button = button.Button(MENU_SCREEN_WIDTH/2, 200, aStar_img, 1)
+amplitude_button = button.Button(MENU_SCREEN_WIDTH/2, 450, amplitude_img, 1)
+cost_button = button.Button(MENU_SCREEN_WIDTH/2, 450, cost_img, 1)
+depth_button = button.Button(MENU_SCREEN_WIDTH/2, 450, depth_img, 1)
+greedy_button = button.Button(MENU_SCREEN_WIDTH/2, 450, greedy_img, 1)
+aStar_button = button.Button(MENU_SCREEN_WIDTH/2, 450, aStar_img, 1)
 back_button = button.Button(MENU_SCREEN_WIDTH/2, 550, back_img, 1)
 """keys_button = button.Button(246, 325, keys_img, 1)
 back_button = button.Button(332, 450, back_img, 1)
@@ -186,8 +208,8 @@ while run:
                 pygame.mixer.Sound.play(select_sound)
 
                 menu_state = "uninformed"
-        if menu_state == "informed":
-            if amplitude_button.draw(screen, MENU_SCREEN_WIDTH):
+        if menu_state == "uninformed":
+            if amplitude_button.draw(screen, MENU_SCREEN_WIDTH/3):
                 pygame.mixer.Sound.play(select_sound)
 
                 algorithm = "amplitud"
@@ -197,18 +219,18 @@ while run:
 
                 algorithm = "costo uniforme"
                 menu_state = "main"
-            if depth_button.draw(screen, MENU_SCREEN_WIDTH):
+            if depth_button.draw(screen, MENU_SCREEN_WIDTH*1.68):
                 pygame.mixer.Sound.play(select_sound)
 
                 algorithm = "profundidad"
                 menu_state = "main"
-        if menu_state == "uninformed":
-            if greedy_button.draw(screen, MENU_SCREEN_WIDTH):
+        if menu_state == "informed":
+            if greedy_button.draw(screen, MENU_SCREEN_WIDTH/2):
                 pygame.mixer.Sound.play(select_sound)
 
                 algorithm = "avara"
                 menu_state = "main"
-            if aStar_button.draw(screen, MENU_SCREEN_WIDTH):
+            if aStar_button.draw(screen, MENU_SCREEN_WIDTH*1.5):
                 pygame.mixer.Sound.play(select_sound)
 
                 algorithm = "A*"
@@ -231,7 +253,8 @@ while run:
                 report_text("Costo:", 340)
                 report_text(controller.getCost(), 365)
                 report_text("Tiempo en S:", 400)
-                report_text(controller.getAlgorithmTime()+"s", 425)
+                report_text(
+                    str(round(controller.getAlgorithmTime(), 5))+"s", 425)
                 # draw Solution
 
                 startGame(solution)
@@ -299,9 +322,9 @@ while run:
         aux = np.nditer(state, flags=['multi_index'])
         for element in aux:
 
-            if element != 0:
+            if element != EMPTY:
                 fig = pygame.image.load("img/%d.jpg" % int(element)).convert()
-                if element == 2:
+                if element == MARIO:
                     if bullets > 0:
                         fig = pygame.image.load(
                             "img/%dfire.jpg" % int(element)).convert()
@@ -314,30 +337,30 @@ while run:
                     fig, (aux.multi_index[1]*BLOCK_SIZE+5, aux.multi_index[0]*BLOCK_SIZE+5))
 
             # check sounds and music
-            if element == 2 and accum > 0:
-                if lastState[aux.multi_index[0]][aux.multi_index[1]] == 5:
+            if element == MARIO and accum > 0:
+                if lastState[aux.multi_index[0]][aux.multi_index[1]] == KOOPA:
                     # sound with star effect
                     if star_effect > 0:
                         pygame.mixer.Sound.play(thwomp_sound)
                     # sound with flower bullets
-                    if bullets > 0:
-                        bullets -= 1
+                    elif bullets > 0:
+                        bullets -= BULLETS
                         pygame.mixer.Sound.play(fireball_sound)
                     # sound without star effect
                     else:
                         pygame.mixer.Sound.play(random.choice(hurts))
-                if lastState[aux.multi_index[0]][aux.multi_index[1]] == 6:
+                if lastState[aux.multi_index[0]][aux.multi_index[1]] == YOSHI:
                     pygame.mixer.Sound.play(yoshi_sound)
                     main_music.set_volume(0)
                     pygame.mixer.Sound.play(stage_clear_music)
-                if lastState[aux.multi_index[0]][aux.multi_index[1]] == 3 and bullets == 0:
+                if lastState[aux.multi_index[0]][aux.multi_index[1]] == STAR and bullets == 0:
                     pygame.mixer.Sound.stop(invincible_music)
                     pygame.mixer.Sound.play(invincible_music)
                     main_music.set_volume(0)
-                    star_effect += 7
-                if lastState[aux.multi_index[0]][aux.multi_index[1]] == 4 and star_effect == 0:
+                    star_effect += STAR_POWER+1
+                if lastState[aux.multi_index[0]][aux.multi_index[1]] == FLOWER and star_effect == 0:
                     pygame.mixer.Sound.play(powerUp_sound)
-                    bullets += 1
+                    bullets += BULLETS
 
         if star_effect > 0:
             star_effect -= 1

@@ -16,7 +16,7 @@ class Controller():
         self.generatedNodes = 0
         self.expandedNodes = 0
         self.cost = 0
-        self.algorithmTime = ""
+        self.algorithmTime = 0
 
     def search(self):
         # find solution using algorithm selected
@@ -27,7 +27,7 @@ class Controller():
         self.generatedNodes = self.searchAlgorithm.getGeneratedNodes()
         self.expandedNodes = self.searchAlgorithm.getExpandedNodes()
         self.cost = self.searchAlgorithm.getCost()
-        self.algorithmTime = str(self.searchAlgorithm.getAlgorithmTime())
+        self.algorithmTime = self.searchAlgorithm.getAlgorithmTime()
 
     def getSolution(self):
         return self.solution

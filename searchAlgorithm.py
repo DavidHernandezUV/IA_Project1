@@ -42,7 +42,7 @@ class SearchAlgorithm:
         self.expandedNodes = 0
         self.depth = 0
         self.cost = 0
-        self.algorithmTime = ""
+        self.algorithmTime = 0
         # in depth algorithm, it starts from the last direction: the last is the first it checks
         self.directions = [self.RIGHT, self.LEFT, self.DOWN, self.UP]
 
@@ -146,7 +146,7 @@ class SearchAlgorithm:
             # Checks if the position of Mario equals Yoshi's
             if currentNode.goalReached(self.yoshiPos):
                 endTime = time.time()
-                self.algorithmTime = str(endTime - startTime)
+                self.algorithmTime = endTime - startTime
                 print("Tiempo de ejecución:", self.algorithmTime, "segundos")
                 self.findSolution(currentNode)
                 print("Mario Pos:", currentNode.getMarioPos())
