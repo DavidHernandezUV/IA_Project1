@@ -49,11 +49,11 @@ font2 = pygame.font.SysFont("comicsansms", 15, True)
 mixer.init()
 # music
 main_music = pygame.mixer.Sound('music/main_theme.ogg')
-main_music.set_volume(0.7)
+main_music.set_volume(0)
 stage_clear_music = pygame.mixer.Sound('music/stage_clear.wav')
-stage_clear_music.set_volume(0.7)
+stage_clear_music.set_volume(0)
 invincible_music = pygame.mixer.Sound('music/invincible.ogg')
-invincible_music.set_volume(0.7)
+invincible_music.set_volume(0)
 # sounds
 select_sound = pygame.mixer.Sound('sounds/bump.ogg')
 bigJump_sound = pygame.mixer.Sound('sounds/big_jump.ogg')
@@ -180,37 +180,37 @@ while run:
             # draw the different algorithms buttons
             if informed_button.draw(screen, MENU_SCREEN_WIDTH):
                 pygame.mixer.Sound.play(select_sound)
-                print("informed")
+
                 menu_state = "informed"
             if uninformed_button.draw(screen, MENU_SCREEN_WIDTH):
                 pygame.mixer.Sound.play(select_sound)
-                print("uninformed")
+
                 menu_state = "uninformed"
         if menu_state == "informed":
             if amplitude_button.draw(screen, MENU_SCREEN_WIDTH):
                 pygame.mixer.Sound.play(select_sound)
-                print("amplitude")
+
                 algorithm = "amplitud"
                 menu_state = "main"
             if cost_button.draw(screen, MENU_SCREEN_WIDTH):
                 pygame.mixer.Sound.play(select_sound)
-                print("cost")
+
                 algorithm = "costo uniforme"
                 menu_state = "main"
             if depth_button.draw(screen, MENU_SCREEN_WIDTH):
                 pygame.mixer.Sound.play(select_sound)
-                print("depth")
+
                 algorithm = "profundidad"
                 menu_state = "main"
         if menu_state == "uninformed":
             if greedy_button.draw(screen, MENU_SCREEN_WIDTH):
                 pygame.mixer.Sound.play(select_sound)
-                print("greedy")
+
                 algorithm = "avara"
                 menu_state = "main"
             if aStar_button.draw(screen, MENU_SCREEN_WIDTH):
                 pygame.mixer.Sound.play(select_sound)
-                print("aStar")
+
                 algorithm = "A*"
                 menu_state = "main"
         if menu_state == "in_game":
@@ -306,6 +306,7 @@ while run:
                         fig = pygame.image.load(
                             "img/%dfire.jpg" % int(element)).convert()
                     if star_effect > 0:
+                        print("STAR:", star_effect)
                         fig = pygame.image.load(
                             "img/%dstar.jpg" % int(element)).convert()
                 # Using blit to copy content from one surface to other

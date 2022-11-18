@@ -221,7 +221,7 @@ class SearchAlgorithm:
             heuristics.append(currentNode.getHeuristic())
             currentNode = currentNode.getFather()
         solutionsOrdered = solutions[::-1]
-        #costsF = costs[::-1]
+        costsF = costs[::-1]
         #heuristicsF = heuristics[::-1]
         self.solution = solutionsOrdered
         #print("Costos", costsF)

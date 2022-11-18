@@ -46,8 +46,10 @@ class Node:
             self.gameCharacter = self.father.getGameBoard()[self.marioPos]
             self.cost = father.getCost() + self.checkCost()
             # should spend before taking any a powerup
-            self.spendPowerUps()
+            #print("bef", self.marioPos, self.cost)
             self.checkPowerUps()
+            self.spendPowerUps()
+            #print("aft", self.marioPos, self.cost)
 
     def getMarioPos(self):
         return self.marioPos
@@ -145,7 +147,7 @@ class Node:
         if self.gameCharacter == self.FLOWER and self.star_effect == 0:
             self.flowers_acum += self.BULLETS
         if self.gameCharacter == self.STAR and self.flowers_acum == 0:
-            self.star_effect += self.STAR_POWER
+            self.star_effect += self.STAR_POWER + 1
 
     # checkCost: int
     # returns the cost of the movement that has been done
@@ -188,9 +190,9 @@ class Node:
 
         flowersFatherHad = self.father.getFlower_acum()
         starsFatherHad = self.father.getStar_effect()
-        if self.gameCharacter == self.STAR and self.flowers_acum > 0:
+        if self.gameCharacter == self.STAR and flowersFatherHad > 0:
             return self.STAR
-        elif self.gameCharacter == self.FLOWER and self.star_effect > 0:
+        elif self.gameCharacter == self.FLOWER and starsFatherHad > 0:
             return self.FLOWER
         elif self.gameCharacter == self.KOOPA and flowersFatherHad == 0 and starsFatherHad == 0:  # ADDED
             return self.KOOPA
