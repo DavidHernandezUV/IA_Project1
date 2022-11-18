@@ -62,6 +62,7 @@ game_ended = False
 lastState = []
 star_effect = 0
 bullets = 0
+currentStar = 0
 
 # define fonts
 font = pygame.font.SysFont("comicsansms", 30)
@@ -361,6 +362,7 @@ while run:
         global lastState
         global star_effect
         global bullets
+        global currentStar
 
         if star_effect == 0:
             main_music.set_volume(0.7)
@@ -404,13 +406,14 @@ while run:
                     pygame.mixer.Sound.stop(invincible_music)
                     pygame.mixer.Sound.play(invincible_music)
                     main_music.set_volume(0)
-                    star_effect += STAR_POWER
+                    currentStar += STAR_POWER
                 if lastState[aux.multi_index[0]][aux.multi_index[1]] == FLOWER and star_effect == 0:
                     pygame.mixer.Sound.play(powerUp_sound)
                     bullets += BULLETS
 
         if star_effect > 0:
-            star_effect -= 1
+            currentStar -= 1
+        star_effect = currentStar
         lastState = state
 
     pygame.display.update()

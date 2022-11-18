@@ -147,10 +147,10 @@ class Node:
         if self.gameCharacter == self.FLOWER and self.star_effect == 0:
             self.flowers_acum += self.BULLETS
         if self.gameCharacter == self.STAR and self.flowers_acum == 0:
-            if self.star_effect > 0:
-                self.star_effect += self.STAR_POWER
-            else:
-                self.star_effect += self.STAR_POWER + 1
+            # if self.star_effect > 0:
+            self.star_effect += self.STAR_POWER
+            # else:
+            #self.star_effect += self.STAR_POWER + 1
 
     # checkCost: int
     # returns the cost of the movement that has been done
@@ -177,12 +177,12 @@ class Node:
     # spendPowerUps:
     # This function check the necesary spends by actions
     def spendPowerUps(self):
-
+        starsFatherHad = self.father.getStar_effect()
         if self.flowers_acum > 0:
             if self.gameCharacter == self.KOOPA:
                 self.flowers_acum -= 1
 
-        if self.star_effect > 0:
+        if starsFatherHad > 0:
             self.star_effect -= 1
 
 # CHANGE FUNCION NAME

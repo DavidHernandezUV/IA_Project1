@@ -224,7 +224,7 @@ class SearchAlgorithm:
         costsF = costs[::-1]
         #heuristicsF = heuristics[::-1]
         self.solution = solutionsOrdered
-        #print("Costos", costsF)
+        print("Costos", costsF)
         #print("Heuristicas", heuristicsF)
         # print(solutionsOrdered)
 
