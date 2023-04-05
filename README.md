@@ -1,5 +1,3 @@
-# IA_Project1
-
 # Mario Smart
 El objetivo de Mario es encontrar a Yoshi en un espacio de 10x10 casillas usando algoritmos de inteligencia artificial. En el ambiente se tienen dos estrellas y dos flores que Mario puede usar. La estrella le permite a Mario ser inmune a los koopas y además puede correr más rápido. Cada flor le permite obtener una bala que podrá usar contra un koopa. Cuando Mario pasa por una casilla donde hay un koopa y no tiene estrella o flor, se afectará el estado de Mario. Considere la siguiente abstracción del mundo representado por medio de una cuadrícula de 10x10.
 
