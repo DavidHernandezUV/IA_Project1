@@ -6,10 +6,10 @@ El objetivo de Mario es encontrar a la princesa en un espacio de 10x10 casillas 
 # Objetivos
 
 El juego debe implementarse utilizando algoritmos de búsqueda Informada y No Informada:
-Informada:
+1. Informada:
 - Búsqueda Ávara
 - Búsqueda A*
-No Informada:
+2. No Informada:
 - Búsqueda por Amplitud
 - Búsqueda por costo uniforme
 - Búsqueda por profundidad evitando ciclos
