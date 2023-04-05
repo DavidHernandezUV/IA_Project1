@@ -6,13 +6,13 @@ El objetivo de Mario es encontrar a la princesa en un espacio de 10x10 casillas 
 # Objetivos
 
 El juego debe implementarse utilizando algoritmos de búsqueda Informada y No Informada:
-- Informada:
-  - Búsqueda Ávara
-  - Búsqueda A*
-- No Informada:
-  - Búsqueda por Amplitud
-  - Búsqueda por costo uniforme
-  - Búsqueda por profundidad evitando ciclos
+Informada:
+- Búsqueda Ávara
+- Búsqueda A*
+No Informada:
+- Búsqueda por Amplitud
+- Búsqueda por costo uniforme
+- Búsqueda por profundidad evitando ciclos
 
 ## Descargar
 Ejecute el comando ```git clone``` seguido de la URL del repositorio terminada en .git
